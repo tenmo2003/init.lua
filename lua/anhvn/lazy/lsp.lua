@@ -46,6 +46,9 @@ return {
                     "lua_ls",
                     "rust_analyzer",
                     "gopls",
+                    "ts_ls",
+                    "tailwindcss",
+                    "java_language_server"
                 },
                 handlers = {
                     function(server_name) -- default handler (optional)
