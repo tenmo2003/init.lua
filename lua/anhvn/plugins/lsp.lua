@@ -48,7 +48,6 @@ return {
                     "gopls",
                     "ts_ls",
                     "tailwindcss",
-                    "jdtls"
                 },
                 handlers = {
                     function(server_name) -- default handler (optional)
