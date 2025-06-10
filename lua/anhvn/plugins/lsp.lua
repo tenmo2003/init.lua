@@ -115,7 +115,12 @@ return {
                     { name = 'luasnip' }, -- For luasnip users.
                 }, {
                     { name = 'buffer' },
-                })
+                }),
+                window = {
+                    completion = {
+                        scrolloff = 3,
+                    },
+                }
             })
 
             vim.diagnostic.config({
