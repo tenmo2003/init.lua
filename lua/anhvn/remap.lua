@@ -1,8 +1,8 @@
 vim.g.mapleader = " "
 vim.keymap.set("n", "<leader>pv", vim.cmd.Ex)
 
-vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
-vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
+vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })
+vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move selection up" })
 
 vim.keymap.set("n", "J", "mzJ`z")
 vim.keymap.set("n", "<C-d>", "<C-d>zz")
@@ -27,21 +27,21 @@ vim.keymap.set("n", "Q", "<nop>")
 vim.keymap.set("n", "<leader>cf", function()
     require("conform").format({ bufnr = 0 })
     print("Formatted")
-end)
+end, { desc = "Format with conform" })
 
-vim.keymap.set("n", "<leader>bf", "mzgg=G`z")
+vim.keymap.set("n", "<leader>bf", "mzgg=G`z", { desc = "Built-in format" })
 
 vim.keymap.set("n", "<C-k>", "<cmd>cprev<CR>zz")
 vim.keymap.set("n", "<C-j>", "<cmd>cnext<CR>zz")
 vim.keymap.set("n", "<leader>k", "<cmd>lnext<CR>zz")
 vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz")
 
-vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
-vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true })
+vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Change all occurrences of word under the cursor" })
+vim.keymap.set("n", "<leader>cx", "<cmd>!chmod +x %<CR>", { silent = true, desc = "Set executable"})
 
-vim.keymap.set("n", "<leader>qc", "<cmd>cclose<CR>")
+vim.keymap.set("n", "<leader>qc", "<cmd>cclose<CR>",  { desc = "Close quickfix list" })
 
 vim.keymap.set("n", "<leader><Tab>", ":tabnext<CR>")
 vim.keymap.set("n", "<leader><S-Tab>", ":tabprevious<CR>")
-vim.keymap.set("n", "<leader>tn", ":tabnew<CR>")
-vim.keymap.set("n", "<leader>tc", ":tabclose<CR>")
+vim.keymap.set("n", "<leader>tn", ":tabnew<CR>", { desc = "New tab" })
+vim.keymap.set("n", "<leader>tc", ":tabclose<CR>", { desc = "Close tab" })
