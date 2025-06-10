@@ -48,7 +48,7 @@ return {
                     "gopls",
                     "ts_ls",
                     "tailwindcss",
-                    "java_language_server"
+                    "jdtls"
                 },
                 handlers = {
                     function(server_name) -- default handler (optional)
