@@ -40,8 +40,3 @@ vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><
 vim.keymap.set("n", "<leader>cx", "<cmd>!chmod +x %<CR>", { silent = true, desc = "Set executable"})
 
 vim.keymap.set("n", "<leader>qc", "<cmd>cclose<CR>",  { desc = "Close quickfix list" })
-
-vim.keymap.set("n", "<leader><Tab>", ":tabnext<CR>")
-vim.keymap.set("n", "<leader><S-Tab>", ":tabprevious<CR>")
-vim.keymap.set("n", "<leader>tn", ":tabnew<CR>", { desc = "New tab" })
-vim.keymap.set("n", "<leader>tc", ":tabclose<CR>", { desc = "Close tab" })
