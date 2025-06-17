@@ -29,12 +29,12 @@ vim.keymap.set("i", "<C-c>", "<Esc>")
 
 vim.keymap.set("n", "Q", "<nop>")
 
-vim.keymap.set("n", "<leader>cf", function()
+vim.keymap.set("n", "<leader>fc", function()
     require("conform").format({ bufnr = 0 })
     print("Formatted")
 end, { desc = "Format with conform" })
 
-vim.keymap.set("n", "<leader>bf", "mzgg=G`z", { desc = "Built-in format" })
+vim.keymap.set("n", "<leader>fb", "mzgg=G`z", { desc = "Built-in format" })
 
 vim.keymap.set("n", "<C-k>", "<cmd>cprev<CR>zz")
 vim.keymap.set("n", "<C-j>", "<cmd>cnext<CR>zz")
