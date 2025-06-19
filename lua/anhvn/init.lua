@@ -1,6 +1,7 @@
 require("anhvn.set")
 require("anhvn.remap")
 require("anhvn.lazy-init")
+require("anhvn.custom-indent")
 
 local augroup = vim.api.nvim_create_augroup
 local anhvn = augroup('anhvn', {})
