@@ -3,6 +3,8 @@ return {
     config = function()
         vim.keymap.set("n", "<leader>gs", vim.cmd.Git)
 
+        vim.keymap.set("n", "<leader>gb", ":Git blame<CR>")
+
         local anhvn_fugitive = vim.api.nvim_create_augroup("anhvn_fugitive", {})
 
         local autocmd = vim.api.nvim_create_autocmd
@@ -27,7 +29,7 @@ return {
 
                 -- NOTE: It allows me to easily set the branch i am pushing and any tracking
                 -- needed if i did not set the branch up correctly
-                vim.keymap.set("n", "<leader>t", ":Git push -u origin ", opts);
+                vim.keymap.set("n", "<leader>po", ":Git push -u origin ", opts);
             end,
         })
 
