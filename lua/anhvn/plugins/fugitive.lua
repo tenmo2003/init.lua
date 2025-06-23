@@ -22,6 +22,10 @@ return {
                     vim.cmd.Git('push')
                 end, opts)
 
+                vim.keymap.set("n", "<leader>gl", function()
+                    vim.cmd.Git('pull')
+                end, opts)
+
                 -- rebase always
                 vim.keymap.set("n", "<leader>P", function()
                     vim.cmd.Git({'pull',  '--rebase'})
