@@ -42,6 +42,7 @@ vim.keymap.set("n", "<leader>k", "<cmd>lnext<CR>zz")
 vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz")
 
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Change all occurrences of word under the cursor" })
+vim.keymap.set("v", "<leader>s", [["zy:%s/\<<C-r>z\>/<C-r>z/gI<Left><Left><Left>]], { desc = "Change all occurrences of selection" })
 vim.keymap.set("n", "<leader>cx", "<cmd>!chmod +x %<CR>", { silent = true, desc = "Set executable"})
 
 vim.keymap.set("n", "<leader>qc", "<cmd>cclose<CR>",  { desc = "Close quickfix list" })
