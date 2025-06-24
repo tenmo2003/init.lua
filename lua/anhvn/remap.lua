@@ -45,4 +45,7 @@ vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><
 vim.keymap.set("v", "<leader>s", [["zy:%s/\<<C-r>z\>/<C-r>z/gI<Left><Left><Left>]], { desc = "Change all occurrences of selection" })
 vim.keymap.set("n", "<leader>cx", "<cmd>!chmod +x %<CR>", { silent = true, desc = "Set executable"})
 
-vim.keymap.set("n", "<leader>qc", "<cmd>cclose<CR>",  { desc = "Close quickfix list" })
+vim.keymap.set("n", "<leader>qc", function()
+  vim.cmd("cclose")
+  vim.fn.setqflist({})
+end, { desc = "Close and clear quickfix list" })
