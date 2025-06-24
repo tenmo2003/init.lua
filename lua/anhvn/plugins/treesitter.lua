@@ -17,6 +17,7 @@ return {
                     "markdown_inline",
                     "javascript",
                     "typescript",
+                    "tsx",
                     "go",
                     "java"
                 },
