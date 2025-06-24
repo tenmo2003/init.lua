@@ -48,6 +48,7 @@ return {
                     "gopls",
                     "ts_ls",
                     "tailwindcss",
+                    "emmet_language_server",
                 },
                 handlers = {
                     function(server_name) -- default handler (optional)
