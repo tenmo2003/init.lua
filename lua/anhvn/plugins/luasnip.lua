@@ -6,7 +6,10 @@ return {
         -- install jsregexp (optional!).
         build = "make install_jsregexp",
 
-        dependencies = { "rafamadriz/friendly-snippets" },
+        dependencies = {
+            "rafamadriz/friendly-snippets",
+            "mlaursen/vim-react-snippets",
+        },
 
         config = function()
             local ls = require("luasnip")
@@ -24,6 +27,8 @@ return {
                     ls.change_choice(1)
                 end
             end, {silent = true})
+
+            require("vim-react-snippets").lazy_load()
         end,
     }
 }
