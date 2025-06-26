@@ -77,3 +77,36 @@ autocmd('LspAttach', {
         { desc = "Go to next diagnostic", buffer = opts.buffer })
     end
 })
+
+_G.auto_organize_on_save_for_html = true -- an escape hatch so I can turn this functionality on/off
+
+local function organize_imports_for_typescript()
+    local ft = vim.bo.filetype:gsub("react$", "")
+    if not vim.tbl_contains({ "javascript", "typescript" }, ft) then
+        return
+    end
+    local params = {
+        command = "_typescript.organizeImports",
+        arguments = { vim.api.nvim_buf_get_name(0) },
+        title = "",
+    }
+
+    local clients = vim.lsp.get_clients { name = "ts_ls" }
+    if #clients == 0 then
+        vim.notify("No ts_ls client found", vim.log.levels.ERROR)
+        return
+    end
+    local client = clients[1]
+    client:exec_cmd(params)
+end
+
+autocmd("BufWritePre", {
+    pattern = { "*.css", "*.html", "*.js", "*.jsx", "*.json", "*.ts", "*.tsx" },
+    callback = function()
+        if not _G.auto_organize_on_save_for_html then
+            return
+        end
+        require("conform").format({ async = false })
+        organize_imports_for_typescript()
+    end,
+})
