@@ -124,6 +124,13 @@ return {
                 }
             })
 
+            cmp.setup.filetype("oil", {
+                sources = {
+                    { name = "buffer" },
+                    { name = "path" },
+                },
+            })
+
             vim.diagnostic.config({
                 virtual_text = true,
                 float = {
