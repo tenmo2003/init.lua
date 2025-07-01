@@ -30,7 +30,7 @@ local function git_branch_name()
 end
 
 local function filetype()
-    return "%-15.y"
+    return "%y"
 end
 
 local function showcmdloc()
@@ -55,6 +55,7 @@ local function build_statusline()
         git_branch_name(),
         "%=",
         filetype(),
+        "  ",
         showcmdloc(),
         keymap(),
         ruler(),
