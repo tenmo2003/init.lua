@@ -1,3 +1,5 @@
+vim.g.mapleader = " " -- lazy requires this
+
 require("anhvn.lazy-init")
 
 local augroup = vim.api.nvim_create_augroup
