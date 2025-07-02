@@ -1,9 +1,4 @@
-require("anhvn.set")
-require("anhvn.statusline")
-require("anhvn.remap")
 require("anhvn.lazy-init")
-require("anhvn.indentations")
-require("anhvn.filetypes")
 
 local augroup = vim.api.nvim_create_augroup
 local anhvn = augroup('anhvn', {})
