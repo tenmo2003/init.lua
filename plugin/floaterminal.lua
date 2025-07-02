@@ -51,6 +51,7 @@ function ToggleFloatingTerminal()
         if vim.bo[state.floating.buf].buftype ~= "terminal" then
             vim.cmd.terminal()
         end
+        vim.cmd("normal i")
 	else
 		vim.api.nvim_win_hide(state.floating.win)
 	end
@@ -59,4 +60,4 @@ end
 vim.api.nvim_create_user_command("Floaterminal", ToggleFloatingTerminal, {})
 
 vim.keymap.set("t", "<esc><esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
-vim.keymap.set({ "n", "t" }, "<leader>ft", ToggleFloatingTerminal, { desc = "Toggle floating terminal" })
+vim.keymap.set({ "n", "t" }, "<C-Space>", ToggleFloatingTerminal, { desc = "Toggle floating terminal" })
