@@ -11,6 +11,7 @@ end
 _G.git_branch = git_branch
 
 vim.api.nvim_create_autocmd({"FileType", "BufEnter", "FocusGained"}, {
+    group = vim.api.nvim_create_augroup("GitBranch", { clear = true }),
     callback = function()
         vim.b.branch_name = git_branch()
     end

@@ -8,6 +8,7 @@ local function setCustomIndentation(fileTypes, indent)
     end
 
     vim.api.nvim_create_autocmd("FileType", {
+        group = vim.api.nvim_create_augroup("CustomIndentation", { clear = true }),
         pattern = fileTypes,
         callback = function()
             vim.bo.tabstop = indent

@@ -101,6 +101,7 @@ end
 
 autocmd("BufWritePre", {
     pattern = { "*.css", "*.html", "*.js", "*.jsx", "*.json", "*.ts", "*.tsx" },
+    group = anhvn,
     callback = function()
         if not _G.auto_organize_on_save_for_html then
             return
