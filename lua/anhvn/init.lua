@@ -45,22 +45,36 @@ autocmd('LspAttach', {
     callback = function(e)
         local opts = { buffer = e.buf }
 
-        vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end,
+        vim.keymap.set("n", "gD", function ()
+            vim.lsp.buf.declaration()
+        end, { buffer = opts.buffer, desc = "Go to declaration" })
+
+        vim.keymap.set("n", "gt", function ()
+            vim.lsp.buf.type_definition()
+        end, { buffer = opts.buffer, desc = "Go to type definition" })
+
+        vim.keymap.set("n", "gd", require("telescope.builtin").lsp_definitions,
         { desc = "Go to definition", buffer = opts.buffer })
+
+        vim.keymap.set("n", "gI", require("telescope.builtin").lsp_implementations,
+        { desc = "Go to implementations", buffer = opts.buffer })
 
         vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end,
         { desc = "Show hover information", buffer = opts.buffer })
 
-        vim.keymap.set("n", "<leader>vws", function() vim.lsp.buf.workspace_symbol() end,
+        vim.keymap.set("n", "<leader>ds", require("telescope.builtin").lsp_dynamic_workspace_symbols,
+        { desc = "Search document symbols", buffer = opts.buffer })
+
+        vim.keymap.set("n", "<leader>ws", require("telescope.builtin").lsp_dynamic_workspace_symbols,
         { desc = "Search workspace symbols", buffer = opts.buffer })
 
-        vim.keymap.set("n", "<leader>vca", function() vim.lsp.buf.code_action() end,
+        vim.keymap.set("n", "<leader>ca", function() vim.lsp.buf.code_action() end,
         { desc = "Code action", buffer = opts.buffer })
 
-        vim.keymap.set("n", "<leader>vrr", function() vim.lsp.buf.references() end,
+        vim.keymap.set("n", "<leader>gr", require("telescope.builtin").lsp_references,
         { desc = "List references", buffer = opts.buffer })
 
-        vim.keymap.set("n", "<leader>vrn", function() vim.lsp.buf.rename() end,
+        vim.keymap.set("n", "<leader>rn", function() vim.lsp.buf.rename() end,
         { desc = "Rename symbol", buffer = opts.buffer })
 
         vim.keymap.set("n", "<leader>vd", function() vim.diagnostic.open_float() end,
