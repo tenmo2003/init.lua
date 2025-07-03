@@ -1,20 +1,20 @@
 local root_files = {
-    '.luarc.json',
-    '.luarc.jsonc',
-    '.luacheckrc',
-    '.stylua.toml',
-    'stylua.toml',
-    'selene.toml',
-    'selene.yml',
-    '.git',
+    ".luarc.json",
+    ".luarc.jsonc",
+    ".luacheckrc",
+    ".stylua.toml",
+    "stylua.toml",
+    "selene.toml",
+    "selene.yml",
+    ".git",
 }
 
 return {
     "neovim/nvim-lspconfig",
     dependencies = {
-        "stevearc/conform.nvim",
-        "williamboman/mason.nvim",
-        "williamboman/mason-lspconfig.nvim",
+        "mason-org/mason.nvim",
+        "mason-org/mason-lspconfig.nvim",
+        "WhoIsSethDaniel/mason-tool-installer.nvim",
         "hrsh7th/cmp-nvim-lsp",
         "hrsh7th/cmp-buffer",
         "hrsh7th/cmp-path",
@@ -26,121 +26,120 @@ return {
     },
 
     config = function()
-        require("conform").setup({
-            formatters_by_ft = {
-            }
-        })
-        local cmp = require('cmp')
-        local cmp_lsp = require("cmp_nvim_lsp")
+        local cmp = require "cmp"
+        local cmp_lsp = require "cmp_nvim_lsp"
+        local lspconfig = require "lspconfig"
         local capabilities = vim.tbl_deep_extend(
             "force",
             {},
             vim.lsp.protocol.make_client_capabilities(),
-            cmp_lsp.default_capabilities())
+            cmp_lsp.default_capabilities()
+        )
 
-            require("fidget").setup({})
-            require("mason").setup()
-            require("mason-lspconfig").setup({
-                automatic_enable = true,
-                ensure_installed = {
-                    "lua_ls",
-                    "rust_analyzer",
-                    "gopls",
-                    "ts_ls",
-                    "tailwindcss",
-                    "emmet_language_server",
-                },
-                handlers = {
-                    function(server_name) -- default handler (optional)
-                        require("lspconfig")[server_name].setup {
-                            capabilities = capabilities
-                        }
-                    end,
+        require("fidget").setup {}
+        require("mason").setup()
 
-                    zls = function()
-                        local lspconfig = require("lspconfig")
-                        lspconfig.zls.setup({
-                            root_dir = lspconfig.util.root_pattern(".git", "build.zig", "zls.json"),
-                            settings = {
-                                zls = {
-                                    enable_inlay_hints = true,
-                                    enable_snippets = true,
-                                    warn_style = true,
-                                },
-                            },
-                        })
-                        vim.g.zig_fmt_parse_errors = 0
-                        vim.g.zig_fmt_autosave = 0
+        local language_servers = {
+            bashls = true,
+            lua_ls = true,
+            gopls = true,
+            rust_analyzer = {
+                manual_install = true,
+            },
+            ts_ls = true,
+            tailwindcss = true,
+            emmet_language_server = true,
+        }
 
-                    end,
-                    ["lua_ls"] = function()
-                        local lspconfig = require("lspconfig")
-                        lspconfig.lua_ls.setup {
-                            capabilities = capabilities,
-                            settings = {
-                                Lua = {
-                                    format = {
-                                        enable = true,
-                                        -- Put format options here
-                                        -- NOTE: the value should be STRING!!
-                                        defaultConfig = {
-                                            indent_style = "space",
-                                            indent_size = "2",
-                                        }
-                                    },
-                                }
-                            }
-                        }
-                    end,
-                }
-            })
+        local servers_to_install = vim.tbl_filter(function(key)
+            local t = language_servers[key]
+            if type(t) == "table" then
+                return not t.manual_install
+            else
+                return t
+            end
+        end, vim.tbl_keys(language_servers))
 
-            local cmp_select = { behavior = cmp.SelectBehavior.Select }
+        local other_tools = {
+            formatters = {
+                "stylua",
+                "prettierd",
+            },
+            linters = {
+                "sonarlint-language-server",
+            },
+        }
 
-            cmp.setup({
-                snippet = {
-                    expand = function(args)
-                        require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
-                    end,
-                },
-                mapping = cmp.mapping.preset.insert({
-                    ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
-                    ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
-                    ['<Tab>'] = cmp.mapping.confirm({ select = true }),
-                    ["<C-Space>"] = cmp.mapping.complete(),
-                }),
-                sources = cmp.config.sources({
-                    { name = 'nvim_lsp' },
-                    { name = 'luasnip' }, -- For luasnip users.
-                    { name = "codeium", group_index = 3 },
-                    { name = "copilot", group_index = 2 },
-                }, {
-                    { name = 'buffer' },
-                }),
-                window = {
-                    completion = {
-                        scrolloff = 3,
-                    },
-                }
-            })
-
-            cmp.setup.filetype("oil", {
-                sources = {
-                    { name = "buffer" },
-                    { name = "path" },
-                },
-            })
-
-            vim.diagnostic.config({
-                virtual_text = true,
-                float = {
-                    focusable = false,
-                    style = "minimal",
-                    border = "rounded",
-                    source = true,
-                    header = "",
-                    prefix = "",
-                },
-            })
+        local ensure_installed = servers_to_install
+        for _, group in pairs(other_tools) do
+            vim.list_extend(ensure_installed, group)
         end
-    }
+
+        for name, config in pairs(language_servers) do
+            if config == true then
+                config = {}
+            end
+            config = vim.tbl_deep_extend("force", {}, {
+                capabilities = capabilities,
+            }, config)
+
+            lspconfig[name].setup(config)
+        end
+
+        require("mason-tool-installer").setup {
+            ensure_installed = ensure_installed,
+        }
+
+        require("mason-lspconfig").setup {
+            automatic_enable = true,
+        }
+
+        local cmp_select = { behavior = cmp.SelectBehavior.Select }
+
+        cmp.setup {
+            snippet = {
+                expand = function(args)
+                    require("luasnip").lsp_expand(args.body) -- For `luasnip` users.
+                end,
+            },
+            mapping = cmp.mapping.preset.insert {
+                ["<C-p>"] = cmp.mapping.select_prev_item(cmp_select),
+                ["<C-n>"] = cmp.mapping.select_next_item(cmp_select),
+                ["<Tab>"] = cmp.mapping.confirm { select = true },
+                ["<C-Space>"] = cmp.mapping.complete(),
+            },
+            sources = cmp.config.sources({
+                { name = "nvim_lsp" },
+                { name = "luasnip" }, -- For luasnip users.
+                { name = "codeium", group_index = 3 },
+                { name = "copilot", group_index = 2 },
+            }, {
+                { name = "buffer" },
+            }),
+            window = {
+                completion = {
+                    scrolloff = 3,
+                },
+            },
+        }
+
+        cmp.setup.filetype("oil", {
+            sources = {
+                { name = "buffer" },
+                { name = "path" },
+            },
+        })
+
+        vim.diagnostic.config {
+            virtual_text = true,
+            float = {
+                focusable = false,
+                style = "minimal",
+                border = "rounded",
+                source = true,
+                header = "",
+                prefix = "",
+            },
+        }
+    end,
+}
