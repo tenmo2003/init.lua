@@ -43,7 +43,7 @@ autocmd("LspAttach", {
             vim.lsp.buf.declaration()
         end, { buffer = opts.buffer, desc = "Go to declaration" })
 
-        vim.keymap.set("n", "gt", function()
+        vim.keymap.set("n", "<leader>gt", function()
             vim.lsp.buf.type_definition()
         end, { buffer = opts.buffer, desc = "Go to type definition" })
 
