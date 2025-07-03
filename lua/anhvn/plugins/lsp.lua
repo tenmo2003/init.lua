@@ -75,6 +75,14 @@ return {
             vim.list_extend(ensure_installed, group)
         end
 
+        require("mason-tool-installer").setup {
+            ensure_installed = ensure_installed,
+        }
+
+        require("mason-lspconfig").setup {
+            automatic_enable = true,
+        }
+
         for name, config in pairs(language_servers) do
             if config == true then
                 config = {}
@@ -85,14 +93,6 @@ return {
 
             lspconfig[name].setup(config)
         end
-
-        require("mason-tool-installer").setup {
-            ensure_installed = ensure_installed,
-        }
-
-        require("mason-lspconfig").setup {
-            automatic_enable = true,
-        }
 
         local cmp_select = { behavior = cmp.SelectBehavior.Select }
 
