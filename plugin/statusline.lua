@@ -1,49 +1,45 @@
 -- Git branch function
 local function git_branch()
-    local branch = vim.fn.system("git branch --show-current 2> /dev/null | tr -d '\n'")
-    if branch ~= "" then
-        return branch
-    else
-        return ""
-    end
+    local branch = vim.fn.system "git branch --show-current 2> /dev/null | tr -d '\n'"
+    return branch ~= "" and branch or ""
 end
 
 _G.git_branch = git_branch
 
-vim.api.nvim_create_autocmd({"FileType", "BufEnter", "FocusGained"}, {
+vim.api.nvim_create_autocmd({ "FileType", "BufEnter", "FocusGained" }, {
     group = vim.api.nvim_create_augroup("GitBranch", { clear = true }),
     callback = function()
         vim.b.branch_name = git_branch()
-    end
+    end,
 })
 
--- Individual statusline component functions
+-- Statusline component functions with highlight groups
 local function file_path()
-    return "%f"
+    return "%#StatusLinePath#%f"
 end
 
 local function flags()
-    return "%h%w%m%r"
+    return "%#StatusLinePath#%h%w%m%r"
 end
 
 local function git_branch_name()
-    return "%{% exists('b:branch_name') && !empty(b:branch_name) ? '[' .. b:branch_name .. ']' : '' %}"
+    return "%#StatusLineGit#%{% exists('b:branch_name') && !empty(b:branch_name) ? 'on  ' .. b:branch_name : '' %}%*"
 end
 
 local function filetype()
-    return "%y"
+    return "%#StatusLineFileType#%y"
 end
 
 local function showcmdloc()
-    return "%{% &showcmdloc == 'statusline' ? '%-10.S ' : '' %}"
+    return "%#StatusLineInactive#%{% &showcmdloc == 'statusline' ? '%-10.S ' : '' %}"
 end
 
 local function keymap()
-    return "%{% exists('b:keymap_name') ? '<'..b:keymap_name..'> ' : '' %}"
+    return "%#StatusLineInactive#%{% exists('b:keymap_name') ? '<'..b:keymap_name..'> ' : '' %}"
 end
 
 local function ruler()
-    return "%{% &ruler ? ( &rulerformat == '' ? '%-14.(%l,%c%V%) %P' : &rulerformat ) : '' %}"
+    return "%#StatusLineRuler#%{% &ruler ? ( &rulerformat == '' ? '%-14.(%l/%L,%c%V%) %P' : &rulerformat ) : '' %}"
 end
 
 -- Compose all components
@@ -66,3 +62,5 @@ end
 
 -- Set the statusline
 vim.o.statusline = build_statusline()
+
+vim.api.nvim_set_hl(0, "StatusLineGit", { fg = "#a6e3a1", bold = true }) -- green (for general Git info)
