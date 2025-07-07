@@ -26,6 +26,7 @@ set("i", "<C-c>", "<Esc>")
 
 set("n", "Q", "<nop>")
 set("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>")
+set("n", "<C-h>", "<cmd>silent !tmux neww tmux-cht.sh<CR>")
 
 set("n", "<leader>fc", function()
     require("conform").format { bufnr = 0 }
