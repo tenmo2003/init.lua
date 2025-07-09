@@ -13,9 +13,8 @@ vim.opt.wrap = false
 vim.opt.swapfile = false
 vim.opt.backup = false
 
-local home = vim.loop.os_uname().sysname == "Windows_NT"
-    and os.getenv("USERPROFILE") -- Windows
-    or os.getenv("HOME")         -- Unix-like
+local home = vim.loop.os_uname().sysname == "Windows_NT" and os.getenv "USERPROFILE" -- Windows
+    or os.getenv "HOME" -- Unix-like
 
 vim.opt.undodir = home .. "/.vim/undodir"
 vim.opt.undofile = true
@@ -27,12 +26,15 @@ vim.opt.termguicolors = true
 
 vim.opt.scrolloff = 8
 vim.opt.signcolumn = "yes"
-vim.opt.isfname:append("@-@")
+vim.opt.isfname:append "@-@"
 
 vim.opt.updatetime = 50
 
 vim.opt.colorcolumn = "80"
 
 vim.g.codeium_filetypes = {
-    oil = false
+    oil = false,
 }
+
+vim.opt.spell = true
+vim.opt.spelllang = "en_us"
