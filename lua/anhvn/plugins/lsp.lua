@@ -204,6 +204,10 @@ return {
                     vim.lsp.buf.rename()
                 end, { desc = "Rename symbol", buffer = opts.buffer })
 
+                vim.keymap.set("n", "<F2>", function()
+                    vim.lsp.buf.rename()
+                end, { desc = "Rename symbol", buffer = opts.buffer })
+
                 vim.keymap.set("n", "<leader>vd", function()
                     vim.diagnostic.open_float()
                 end, { desc = "Show diagnostics in a floating window", buffer = opts.buffer })
