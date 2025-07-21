@@ -26,9 +26,9 @@ return {
         "supermaven-inc/supermaven-nvim",
         config = function()
             require("supermaven-nvim").setup {
-                condition = function()
-                    return vim.bo.filetype == "oil"
-                end,
+                ignore_filetypes = {
+                    oil = true,
+                },
             }
         end,
     },
