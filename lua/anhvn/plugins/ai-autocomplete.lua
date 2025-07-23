@@ -6,21 +6,22 @@ return {
     --         "hrsh7th/nvim-cmp",
     --     },
     --     config = function()
-    --         require("codeium").setup({
+    --         require("codeium").setup {
+    --             enable_cmp_source = false,
     --             virtual_text = {
     --                 enabled = true,
     --                 filetypes = {
-    --                     oil = false
+    --                     oil = false,
     --                 },
     --                 key_bindings = {
     --                     clear = "<C-]>",
     --                     accept_word = "<M-w>",
     --                     next = "<M-l>",
     --                     prev = "<M-h>",
-    --                 }
-    --             }
-    --         })
-    --     end
+    --                 },
+    --             },
+    --         }
+    --     end,
     -- },
     {
         "supermaven-inc/supermaven-nvim",
