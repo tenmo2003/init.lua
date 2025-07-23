@@ -113,7 +113,7 @@ return {
                 { name = "nvim_lsp" },
                 { name = "luasnip" }, -- For luasnip users.
                 { name = "codeium", group_index = 3 },
-                { name = "supermaven", group_index = 3 },
+                -- { name = "supermaven", group_index = 3 },
                 { name = "copilot", group_index = 2 },
             }, {
                 { name = "buffer" },
