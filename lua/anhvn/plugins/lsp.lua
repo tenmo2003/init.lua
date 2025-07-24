@@ -64,6 +64,7 @@ return {
             formatters = {
                 "stylua",
                 "prettierd",
+                "goimports",
             },
             linters = {
                 "sonarlint-language-server",
