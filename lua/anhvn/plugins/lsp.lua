@@ -173,7 +173,7 @@ return {
                 )
 
                 vim.keymap.set("n", "K", function()
-                    vim.lsp.buf.hover()
+                    vim.lsp.buf.hover { border = "rounded" }
                 end, { desc = "Show hover information", buffer = opts.buffer })
 
                 vim.keymap.set(
