@@ -14,6 +14,7 @@ return {
     --                     oil = false,
     --                 },
     --                 key_bindings = {
+    --                     accept = "<S-Tab>",
     --                     clear = "<C-]>",
     --                     accept_word = "<M-w>",
     --                     next = "<M-l>",
@@ -29,6 +30,9 @@ return {
             require("supermaven-nvim").setup {
                 ignore_filetypes = {
                     oil = true,
+                },
+                keymaps = {
+                    accept_suggestion = "<S-Tab>",
                 },
             }
         end,
