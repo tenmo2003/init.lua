@@ -190,7 +190,7 @@ return {
                     { desc = "Search workspace symbols", buffer = opts.buffer }
                 )
 
-                vim.keymap.set("n", "<leader>ca", function()
+                vim.keymap.set({ "n", "x" }, "<leader>ca", function()
                     vim.lsp.buf.code_action()
                 end, { desc = "Code action", buffer = opts.buffer })
 
