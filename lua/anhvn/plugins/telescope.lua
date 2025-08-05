@@ -8,6 +8,9 @@ return {
                     hidden = true,
                 },
             },
+            defaults = {
+                path_display = { "truncate", "filename_first" },
+            },
         }
         local builtin = require "telescope.builtin"
         vim.keymap.set("n", "<leader>pf", builtin.find_files, { desc = "Telescope find files" })
