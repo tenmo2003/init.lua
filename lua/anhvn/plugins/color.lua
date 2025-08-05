@@ -13,13 +13,13 @@ return {
                     }
                 end,
             }
-            vim.cmd.colorscheme "catppuccin"
+            -- vim.cmd.colorscheme "catppuccin-macchiato"
         end,
     },
-    -- {
-    --     "vague2k/vague.nvim",
-    --     config = function()
-    --         vim.cmd.colorscheme "vague"
-    --     end
-    -- },
+    {
+        "vague2k/vague.nvim",
+        config = function()
+            vim.cmd.colorscheme "vague"
+        end,
+    },
 }
