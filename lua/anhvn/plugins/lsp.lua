@@ -178,7 +178,7 @@ return {
 
                 vim.keymap.set(
                     "n",
-                    "<leader>ds",
+                    "<leader>bs",
                     require("telescope.builtin").lsp_document_symbols,
                     { desc = "Search document symbols", buffer = opts.buffer }
                 )
