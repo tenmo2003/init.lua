@@ -34,8 +34,6 @@ autocmd("BufWritePre", {
     end,
 })
 
-_G.auto_organize_on_save_for_html = true -- an escape hatch so I can turn this functionality on/off
-
 local function organize_imports_for_typescript()
     local ft = vim.bo.filetype:gsub("react$", "")
     if not vim.tbl_contains({ "javascript", "typescript" }, ft) then
@@ -56,14 +54,15 @@ local function organize_imports_for_typescript()
     client:exec_cmd(params)
 end
 
-autocmd("BufWritePre", {
+autocmd("BufEnter", {
     pattern = { "*.css", "*.html", "*.js", "*.jsx", "*.json", "*.ts", "*.tsx" },
     group = anhvn,
     callback = function()
-        if not _G.auto_organize_on_save_for_html then
-            return
-        end
-        require("conform").format { async = false }
-        organize_imports_for_typescript()
+        vim.api.nvim_create_user_command("OrganizeImports", function()
+            organize_imports_for_typescript()
+            vim.notify "Organized imports"
+        end, {})
+
+        vim.keymap.set("n", "<S-M-o>", ":OrganizeImports<CR>", { buffer = true })
     end,
 })
