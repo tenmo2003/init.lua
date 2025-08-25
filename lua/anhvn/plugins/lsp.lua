@@ -93,7 +93,9 @@ return {
         end
 
         require("mason-lspconfig").setup {
-            automatic_enable = true,
+            automatic_enable = {
+                exclude = { "jdtls" },
+            },
         }
 
         local cmp_select = { behavior = cmp.SelectBehavior.Select }
