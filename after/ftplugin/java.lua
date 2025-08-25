@@ -37,7 +37,7 @@ local config = {
         "-jar",
         vim.fn.glob(vim.fs.joinpath(jdtls_path, "plugins", "org.eclipse.equinox.launcher_*.jar")),
         "-configuration",
-        vim.fs.joinpath(jdtls_path, "config_win"),
+        vim.fs.joinpath(jdtls_path, "config_linux"),
         "-data",
         workspace_dir,
     },
