@@ -71,9 +71,33 @@ return {
             "mfussenegger/nvim-dap",
         },
         opts = {
-            handlers = {},
             ensure_installed = { "delve" },
             automatic_installation = true,
+            handlers = {
+                function(config)
+                    require("mason-nvim-dap").default_setup(config)
+                end,
+                delve = function(config)
+                    table.insert(config.configurations, 1, {
+                        type = "delve",
+                        name = "file",
+                        request = "launch",
+                        program = "${file}",
+                        outputMode = "remote",
+                    })
+                    table.insert(config.configurations, 2, {
+                        args = function()
+                            return vim.split(vim.fn.input "args> ", " ")
+                        end,
+                        type = "delve",
+                        name = "file args",
+                        request = "launch",
+                        program = "${file}",
+                        outputMode = "remote",
+                    })
+                    require("mason-nvim-dap").default_setup(config)
+                end,
+            },
         },
     },
     {
