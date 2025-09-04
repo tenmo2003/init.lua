@@ -3,7 +3,6 @@ return {
     opts = {
         format_on_save = {
             timeout_ms = 500,
-            lsp_fallback = true,
         },
         formatters_by_ft = {
             lua = { "stylua" },
@@ -12,6 +11,9 @@ return {
             javascriptreact = { "prettierd" },
             typescript = { "prettierd" },
             typescriptreact = { "prettierd" },
+        },
+        default_format_opts = {
+            lsp_format = "fallback",
         },
     },
 }
