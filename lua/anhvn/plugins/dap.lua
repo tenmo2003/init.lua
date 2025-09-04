@@ -104,6 +104,25 @@ return {
         "igorlfs/nvim-dap-view",
         ---@module 'dap-view'
         ---@type dapview.Config
-        opts = {},
+        opts = {
+            winbar = {
+                sections = { "watches", "scopes", "exceptions", "breakpoints", "threads", "repl", "console" },
+                controls = {
+                    enabled = true,
+                },
+            },
+        },
+        keys = function()
+            local dap_view = require "dap-view"
+            return {
+                {
+                    "<leader>du",
+                    function()
+                        dap_view.toggle(true)
+                    end,
+                    desc = "Debug: Toggle View",
+                },
+            }
+        end,
     },
 }

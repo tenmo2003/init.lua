@@ -13,6 +13,16 @@ local workspace_dir = workspace_path .. project_name
 
 local jdtls_path = vim.fs.joinpath(vim.fn.stdpath "data", "mason", "packages", "jdtls")
 
+local java_debug_path = vim.fs.joinpath(
+    vim.fn.stdpath "data",
+    "mason",
+    "packages",
+    "java-debug-adapter",
+    "extension",
+    "server",
+    "com.microsoft.java.debug.plugin-*.jar"
+)
+
 local status, jdtls = pcall(require, "jdtls")
 if not status then
     return
@@ -88,10 +98,24 @@ local config = {
     },
 
     init_options = {
-        bundles = {},
+        bundles = {
+            vim.fn.glob(java_debug_path, true),
+        },
     },
 }
 require("jdtls").start_or_attach(config)
+
+local dap = require "dap"
+dap.configurations.java = dap.configurations.java or {}
+table.insert(dap.configurations.java, {
+    type = "java",
+    request = "attach",
+    name = "Debug (Attach) - Remote",
+    hostName = "127.0.0.1",
+    port = function()
+        return vim.fn.input("Debug Port: ", "8000")
+    end,
+})
 
 vim.keymap.set("n", "<S-M-o>", "<Cmd>lua require'jdtls'.organize_imports()<CR>", { desc = "Organize Imports" })
 vim.keymap.set("n", "<leader>evs", "<Cmd>lua require('jdtls').extract_variable()<CR>", { desc = "Extract Variable" })
