@@ -94,12 +94,24 @@ local config = {
 require("jdtls").start_or_attach(config)
 
 vim.keymap.set("n", "<S-M-o>", "<Cmd>lua require'jdtls'.organize_imports()<CR>", { desc = "Organize Imports" })
-vim.keymap.set("n", "<leader>ev", "<Cmd>lua require('jdtls').extract_variable()<CR>", { desc = "Extract Variable" })
+vim.keymap.set("n", "<leader>evs", "<Cmd>lua require('jdtls').extract_variable()<CR>", { desc = "Extract Variable" })
 vim.keymap.set(
     "v",
     "<leader>ev",
     "<Esc><Cmd>lua require('jdtls').extract_variable(true)<CR>",
     { desc = "Extract Variable" }
+)
+vim.keymap.set(
+    "n",
+    "<leader>eva",
+    "<Cmd>lua require('jdtls').extract_variable_all()<CR>",
+    { desc = "Extract Variable For All Occurrences" }
+)
+vim.keymap.set(
+    "v",
+    "<leader>eva",
+    "<Esc><Cmd>lua require('jdtls').extract_variable_all(true)<CR>",
+    { desc = "Extract Variable For All Occurrences" }
 )
 vim.keymap.set("n", "<leader>ec", "<Cmd>lua require('jdtls').extract_constant()<CR>", { desc = "Extract Constant" })
 vim.keymap.set(
