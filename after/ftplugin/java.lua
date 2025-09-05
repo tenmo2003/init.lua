@@ -127,7 +127,7 @@ vim.keymap.set("n", "<S-M-o>", "<Cmd>lua require'jdtls'.organize_imports()<CR>",
 vim.keymap.set("n", "<leader>evs", "<Cmd>lua require('jdtls').extract_variable()<CR>", { desc = "Extract Variable" })
 vim.keymap.set(
     "v",
-    "<leader>ev",
+    "<leader>evs",
     "<Esc><Cmd>lua require('jdtls').extract_variable(true)<CR>",
     { desc = "Extract Variable" }
 )
