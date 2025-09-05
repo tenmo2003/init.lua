@@ -1,13 +1,14 @@
 return {
     {
         "sindrets/diffview.nvim",
-        opts = {
-            use_icons = false,
-        },
         config = function()
-            vim.keymap.set("n", "<leader>gh", function()
+            require("diffview").setup {
+                use_icons = false,
+            }
+
+            vim.keymap.set("n", "<leader>fh", function()
                 vim.cmd "DiffviewFileHistory %"
-            end, { desc = "View current file git history" })
+            end, { desc = "View current file history from git" })
         end,
     },
 }
