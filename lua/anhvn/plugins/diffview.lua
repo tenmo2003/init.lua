@@ -4,14 +4,10 @@ return {
         opts = {
             use_icons = false,
         },
-        keys = {
-            {
-                "<leader>gh",
-                function()
-                    vim.cmd "DiffviewFileHistory %"
-                end,
-                desc = "View current file git history",
-            },
-        },
+        config = function()
+            vim.keymap.set("n", "<leader>gh", function()
+                vim.cmd "DiffviewFileHistory %"
+            end, { desc = "View current file git history" })
+        end,
     },
 }
