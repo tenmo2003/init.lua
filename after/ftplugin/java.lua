@@ -78,7 +78,7 @@ local config = {
                 },
             },
             format = {
-                enabled = true,
+                enabled = false,
             },
             configuration = {
                 -- See https://github.com/eclipse/eclipse.jdt.ls/wiki/Running-the-JAVA-LS-server-from-the-command-line#initialize-request
