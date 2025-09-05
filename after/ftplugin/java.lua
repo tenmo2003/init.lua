@@ -51,7 +51,13 @@ local config = {
         "-data",
         workspace_dir,
     },
-    root_dir = require("jdtls.setup").find_root { ".git", "mvnw", "gradlew" },
+    root_dir = require("jdtls.setup").find_root { ".git", "mvnw", "gradlew" } or require("jdtls.setup").find_root {
+        "pom.xml",
+        "build.gradle",
+        "build.xml",
+        "settings.gradle",
+        "settings.gradle.kts",
+    }, -- priorize multi-module projects
 
     settings = {
         java = {
