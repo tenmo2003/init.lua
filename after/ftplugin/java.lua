@@ -111,18 +111,6 @@ local config = {
 }
 require("jdtls").start_or_attach(config)
 
-local dap = require "dap"
-dap.configurations.java = dap.configurations.java or {}
-table.insert(dap.configurations.java, {
-    type = "java",
-    request = "attach",
-    name = "Debug (Attach) - Remote",
-    hostName = "127.0.0.1",
-    port = function()
-        return vim.fn.input("Debug Port: ", "8000")
-    end,
-})
-
 vim.keymap.set("n", "<S-M-o>", "<Cmd>lua require'jdtls'.organize_imports()<CR>", { desc = "Organize Imports" })
 vim.keymap.set("n", "<leader>evs", "<Cmd>lua require('jdtls').extract_variable()<CR>", { desc = "Extract Variable" })
 vim.keymap.set(
