@@ -59,6 +59,9 @@ set("n", "<leader>qc", function()
     vim.fn.setqflist {}
 end, { desc = "Close and clear quickfix list" })
 
+set("n", "<leader>tn", function()
+    vim.cmd "tabnew"
+end)
 set("n", "<leader>tc", function()
     vim.cmd "tabclose"
 end)
