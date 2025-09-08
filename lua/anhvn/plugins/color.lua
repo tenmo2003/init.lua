@@ -31,7 +31,7 @@ return {
                 end,
             }
             colorscheme_autocmd "catppuccin*"
-            -- vim.cmd.colorscheme "catppuccin-macchiato"
+            vim.cmd.colorscheme "catppuccin-macchiato"
         end,
     },
     {
@@ -40,7 +40,7 @@ return {
             colorscheme_autocmd("vague", function()
                 vim.cmd.hi "StatusLine guibg=NONE"
             end)
-            vim.cmd.colorscheme "vague"
+            -- vim.cmd.colorscheme "vague"
         end,
     },
 }
