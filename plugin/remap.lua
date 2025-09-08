@@ -28,11 +28,6 @@ set("n", "Q", "<nop>")
 set("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>")
 set("n", "<C-h>", "<cmd>silent !tmux neww tmux-cht.sh<CR>")
 
-set("n", "<leader>fc", function()
-    require("conform").format { bufnr = 0 }
-    print "Formatted"
-end, { desc = "Format with conform" })
-
 set("n", "<leader>fb", "mzgg=G`z", { desc = "Built-in format" })
 
 set("n", "<C-k>", "<cmd>cprev<CR>zz")
