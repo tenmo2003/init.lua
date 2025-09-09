@@ -1,3 +1,3 @@
-require("anhvn")
+require "anhvn"
 
 -- what's good

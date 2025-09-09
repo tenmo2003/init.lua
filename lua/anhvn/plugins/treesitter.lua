@@ -1,11 +1,11 @@
 return {
     {
         "nvim-treesitter/nvim-treesitter",
-        branch = 'master',
+        branch = "master",
         lazy = false,
         build = ":TSUpdate",
         config = function()
-            require'nvim-treesitter.configs'.setup {
+            require("nvim-treesitter.configs").setup {
                 -- A list of parser names, or "all" (the listed parsers MUST always be installed)
                 ensure_installed = {
                     "c",
@@ -19,9 +19,8 @@ return {
                     "typescript",
                     "tsx",
                     "go",
-                    "java"
+                    "java",
                 },
-
 
                 -- Install parsers synchronously (only applied to `ensure_installed`)
                 sync_install = false,
@@ -53,7 +52,7 @@ return {
                             vim.notify(
                                 "File larger than 100KB treesitter disabled for performance",
                                 vim.log.levels.WARN,
-                                {title = "Treesitter"}
+                                { title = "Treesitter" }
                             )
                             return true
                         end
@@ -66,7 +65,7 @@ return {
                     additional_vim_regex_highlighting = false,
                 },
             }
-        end
+        end,
     },
-    { "nvim-treesitter/nvim-treesitter-context", opts = {} }
+    { "nvim-treesitter/nvim-treesitter-context", opts = {} },
 }

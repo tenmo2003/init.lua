@@ -15,9 +15,8 @@ local function setCustomIndentation(fileTypes, indent)
             vim.bo.softtabstop = indent
             vim.bo.shiftwidth = indent
             vim.bo.expandtab = true
-        end
+        end,
     })
 end
-
 
 setCustomIndentation({ "javascript", "typescript", "javascriptreact", "typescriptreact" }, 2)
