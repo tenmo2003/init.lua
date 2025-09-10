@@ -19,6 +19,10 @@ return {
     {
         "echasnovski/mini.splitjoin",
         version = false,
-        opts = {},
+        opts = {
+            detect = {
+                exclude_regions = { "%b()", "%b[]", "%b{}", '%b""', "%b''", "%b<>" },
+            },
+        },
     },
 }
