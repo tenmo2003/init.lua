@@ -14,6 +14,12 @@ return {
                 },
                 defaults = {
                     path_display = { "truncate", "filename_first" },
+                    layout_config = {
+                        horizontal = {
+                            prompt_position = "top",
+                        },
+                    },
+                    sorting_strategy = "ascending",
                 },
             }
             local builtin = require "telescope.builtin"
