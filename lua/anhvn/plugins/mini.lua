@@ -1,6 +1,6 @@
 return {
     {
-        "echasnovski/mini.ai",
+        "nvim-mini/mini.ai",
         version = false,
         opts = {
             custom_textobjects = {
@@ -17,12 +17,17 @@ return {
         },
     },
     {
-        "echasnovski/mini.splitjoin",
+        "nvim-mini/mini.splitjoin",
         version = false,
         opts = {
             detect = {
                 exclude_regions = { "%b()", "%b[]", "%b{}", '%b""', "%b''", "%b<>" },
             },
         },
+    },
+    {
+        "nvim-mini/mini.surround",
+        version = false,
+        opts = {},
     },
 }
