@@ -1,3 +1,6 @@
 return {
-    { dir = "/home/tenmo/projects/personal/scaffold.nvim/", opts = {} },
+    {
+        "tenmo2003/scaffold.nvim",
+        opts = {},
+    },
 }
