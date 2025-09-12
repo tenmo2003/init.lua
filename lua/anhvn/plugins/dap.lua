@@ -62,54 +62,7 @@ return {
             --
             -- This avoid unnecessary jumps
             dap.defaults.fallback.switchbuf = "usevisible,usetab,newtab"
-
-            dap.configurations.java = dap.configurations.java or {}
-            table.insert(dap.configurations.java, {
-                type = "java",
-                request = "attach",
-                name = "Debug (Attach) - Remote",
-                hostName = "127.0.0.1",
-                port = function()
-                    return vim.fn.input("Debug Port: ", "8000")
-                end,
-            })
         end,
-    },
-    {
-        "jay-babu/mason-nvim-dap.nvim",
-        dependencies = {
-            "williamboman/mason.nvim",
-            "mfussenegger/nvim-dap",
-        },
-        opts = {
-            ensure_installed = { "delve" },
-            automatic_installation = true,
-            handlers = {
-                function(config)
-                    require("mason-nvim-dap").default_setup(config)
-                end,
-                delve = function(config)
-                    table.insert(config.configurations, 1, {
-                        type = "delve",
-                        name = "file",
-                        request = "launch",
-                        program = "${file}",
-                        outputMode = "remote",
-                    })
-                    table.insert(config.configurations, 2, {
-                        args = function()
-                            return vim.split(vim.fn.input "args> ", " ")
-                        end,
-                        type = "delve",
-                        name = "file args",
-                        request = "launch",
-                        program = "${file}",
-                        outputMode = "remote",
-                    })
-                    require("mason-nvim-dap").default_setup(config)
-                end,
-            },
-        },
     },
     {
         "igorlfs/nvim-dap-view",

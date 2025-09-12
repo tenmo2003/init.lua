@@ -146,3 +146,5 @@ vim.keymap.set(
 )
 
 vim.cmd [[setlocal makeprg=mvn\ clean\ compile]]
+
+require "anhvn.dap.java"
