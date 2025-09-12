@@ -144,3 +144,5 @@ vim.keymap.set(
     "<Esc><Cmd>lua require('jdtls').extract_method(true)<CR>",
     { desc = "Extract Method" }
 )
+
+vim.cmd [[setlocal makeprg=mvn\ clean\ compile]]
