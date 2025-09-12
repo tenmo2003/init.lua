@@ -28,7 +28,6 @@ return {
     config = function()
         local cmp = require "cmp"
         local cmp_lsp = require "cmp_nvim_lsp"
-        local lspconfig = require "lspconfig"
         local capabilities = vim.tbl_deep_extend(
             "force",
             {},
