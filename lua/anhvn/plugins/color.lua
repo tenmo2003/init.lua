@@ -27,6 +27,7 @@ return {
                         LineNr = { fg = colors.text },
                         LineNrAbove = { fg = colors.surface2 },
                         LineNrBelow = { fg = colors.surface2 },
+                        debugPC = { bg = colors.surface1 },
                     }
                 end,
             }
