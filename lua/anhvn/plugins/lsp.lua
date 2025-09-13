@@ -134,18 +134,6 @@ return {
             },
         })
 
-        vim.diagnostic.config {
-            virtual_text = true,
-            float = {
-                focusable = false,
-                style = "minimal",
-                border = "rounded",
-                source = true,
-                header = "",
-                prefix = "",
-            },
-        }
-
         vim.api.nvim_create_autocmd("LspAttach", {
             group = vim.api.nvim_create_augroup("OnLSPAttach", {}),
             callback = function(e)
@@ -210,21 +198,9 @@ return {
                     vim.lsp.buf.rename()
                 end, { desc = "Rename symbol", buffer = opts.buffer })
 
-                vim.keymap.set("n", "<leader>vd", function()
-                    vim.diagnostic.open_float()
-                end, { desc = "Show diagnostics in a floating window", buffer = opts.buffer })
-
                 vim.keymap.set("i", "<C-h>", function()
                     vim.lsp.buf.signature_help()
                 end, { desc = "Signature help", buffer = opts.buffer })
-
-                vim.keymap.set("n", "[d", function()
-                    vim.diagnostic.jump { count = -1, float = true }
-                end, { desc = "Go to previous diagnostic", buffer = opts.buffer })
-
-                vim.keymap.set("n", "]d", function()
-                    vim.diagnostic.jump { count = 1, float = true }
-                end, { desc = "Go to next diagnostic", buffer = opts.buffer })
             end,
         })
     end,

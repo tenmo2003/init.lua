@@ -60,3 +60,14 @@ end)
 set("n", "<leader>tc", function()
     vim.cmd "tabclose"
 end)
+
+set("n", "<leader>vd", function()
+    vim.diagnostic.open_float()
+end, { desc = "Show diagnostics in a floating window" })
+set("n", "[d", function()
+    vim.diagnostic.jump { count = -1, float = true }
+end, { desc = "Go to previous diagnostic" })
+
+set("n", "]d", function()
+    vim.diagnostic.jump { count = 1, float = true }
+end, { desc = "Go to next diagnostic" })

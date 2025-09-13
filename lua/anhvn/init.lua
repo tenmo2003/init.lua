@@ -34,6 +34,18 @@ autocmd("BufWritePre", {
     end,
 })
 
+vim.diagnostic.config {
+    virtual_text = true,
+    float = {
+        focusable = false,
+        style = "minimal",
+        border = "rounded",
+        source = true,
+        header = "",
+        prefix = "",
+    },
+}
+
 local function organize_imports_for_typescript()
     local ft = vim.bo.filetype:gsub("react$", "")
     if not vim.tbl_contains({ "javascript", "typescript" }, ft) then
