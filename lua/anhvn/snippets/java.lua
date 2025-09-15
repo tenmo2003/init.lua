@@ -61,6 +61,29 @@ local function ensure_imports(classes, node, event_args)
 end
 
 return {
+    s("psf", {
+        t { "public static final " },
+        i(1, "type"),
+        t { " " },
+        i(2, "name"),
+        t { " = " },
+        i(3, "value"),
+        t { ";" },
+    }),
+    s("psfi", {
+        t { "public static final int" },
+        i(1, "name"),
+        t { " = " },
+        i(2, "value"),
+        t { ";" },
+    }),
+    s("psfs", {
+        t { "public static final String" },
+        i(1, "name"),
+        t { " = " },
+        i(2, "value"),
+        t { ";" },
+    }),
     s("getset", {
         t { "@Getter", "@Setter" },
     }, {
