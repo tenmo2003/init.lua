@@ -15,6 +15,9 @@ return {
             local ls = require "luasnip"
             ls.filetype_extend("javascript", { "jsdoc" })
             require("luasnip.loaders.from_vscode").lazy_load()
+            require("luasnip.loaders.from_lua").lazy_load {
+                paths = { vim.fs.joinpath(vim.fn.stdpath "config", "lua/anhvn/snippets") },
+            }
 
             --- TODO: What is expand?
             vim.keymap.set({ "i" }, "<C-s>e", function()
