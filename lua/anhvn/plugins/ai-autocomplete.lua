@@ -30,6 +30,7 @@ return {
             require("supermaven-nvim").setup {
                 ignore_filetypes = {
                     oil = true,
+                    git = true,
                 },
                 keymaps = {
                     accept_suggestion = "<S-Tab>",
