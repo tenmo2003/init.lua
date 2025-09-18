@@ -40,7 +40,9 @@ return {
             require("mason").setup()
 
             local language_servers = {
-                bashls = true,
+                bashls = {
+                    filetypes = { "sh", "zsh" },
+                },
                 lua_ls = true,
                 gopls = true,
                 rust_analyzer = {
