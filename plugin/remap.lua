@@ -39,14 +39,12 @@ set(
     "n",
     "<leader>s",
     [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
-    { desc = "Change all occurrences of word under the cursor" }
+    { desc = "Change all occurrences of word under cursor" }
 )
-set(
-    "v",
-    "<leader>s",
-    [["zy:%s/\<<C-r>z\>/<C-r>z/gI<Left><Left><Left>]],
-    { desc = "Change all occurrences of selection" }
-)
+set("v", "<leader>s", [["zy:%s/<C-r>z/<C-r>z/gI<Left><Left><Left>]], { desc = "Change all occurrences of selection" })
+
+set("n", "<C-n>", [[/\<<C-r><C-w>\>]], { desc = "Search for word under cursor" })
+set("v", "<C-n>", [["zy/<C-r>z]], { desc = "Search for selection" })
 set("n", "<leader>cx", "<cmd>!chmod +x %<CR>", { silent = true, desc = "Set executable" })
 
 set("n", "<leader>qc", function()
