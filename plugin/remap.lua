@@ -54,10 +54,10 @@ end, { desc = "Close and clear quickfix list" })
 
 set("n", "<leader>tn", function()
     vim.cmd "tabnew"
-end)
+end, { desc = "Open new tab" })
 set("n", "<leader>tc", function()
     vim.cmd "tabclose"
-end)
+end, { desc = "Close current tab" })
 
 set("n", "<leader>vd", function()
     vim.diagnostic.open_float()

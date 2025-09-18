@@ -22,28 +22,33 @@ return {
                     sorting_strategy = "ascending",
                 },
             }
+            local set = vim.keymap.set
             local builtin = require "telescope.builtin"
-            vim.keymap.set("n", "<leader>pf", builtin.find_files, { desc = "Telescope find files" })
-            vim.keymap.set("n", "<leader>pg", builtin.live_grep)
-            vim.keymap.set("n", "<leader>pr", builtin.resume, { desc = "Telescope resume" })
-            vim.keymap.set("n", "<C-p>", builtin.git_files, { desc = "Telescope git files" })
-            vim.keymap.set("n", "<leader>ps", function()
+            -- Project related keymaps
+            set("n", "<leader>pf", builtin.find_files, { desc = "Telescope find files" })
+            set("n", "<leader>pg", builtin.live_grep, { desc = "Telescope live grep" })
+            set("n", "<C-p>", builtin.git_files, { desc = "Telescope git files" })
+            set("n", "<leader>ps", function()
                 builtin.grep_string { search = vim.fn.input "Grep > " }
             end, { desc = "Search string" })
-            vim.keymap.set("n", "<leader>pws", function()
+            set("n", "<leader>pws", function()
                 local word = vim.fn.expand "<cword>"
                 builtin.grep_string { search = word }
             end, { desc = "Search word under the cursor" })
-            vim.keymap.set("n", "<leader>pWs", function()
+            set("n", "<leader>pWs", function()
                 local word = vim.fn.expand "<cWORD>"
                 builtin.grep_string { search = word }
             end, { desc = "Search WORD under the cursor" })
-            vim.keymap.set("n", "<leader>ph", builtin.help_tags, { desc = "View help tags" })
-            vim.keymap.set("n", "<leader>pc", builtin.git_commits, { desc = "View commits" })
-            vim.keymap.set("n", "<leader>bd", function()
+            set("n", "<leader>pc", builtin.git_commits, { desc = "Telescope: commits" })
+            set("n", "<leader>bd", function()
                 builtin.diagnostics { bufnr = 0 }
             end, { desc = "View current buffer's diagnostics" })
-            vim.keymap.set("n", "<leader>wd", builtin.diagnostics, { desc = "View all buffers' diagnostics" })
+            set("n", "<leader>wd", builtin.diagnostics, { desc = "View all buffers' diagnostics" })
+
+            -- General keymaps
+            set("n", "<leader>th", builtin.help_tags, { desc = "Telescope: help tags" })
+            set("n", "<leader>tr", builtin.resume, { desc = "Telescope: resume" })
+            set("n", "<leader>tk", builtin.keymaps, { desc = "Telescope: keymaps" })
 
             -- Telescope extensions
             require("telescope").load_extension "fzf"
