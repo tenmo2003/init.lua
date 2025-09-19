@@ -95,4 +95,20 @@ return {
             },
         },
     }),
+    s("code1945", {
+        t {
+            "if (!client.has(SessionConstants.CODE)) {",
+            "\treturn;",
+            "}",
+            "int code = client.get(SessionConstants.CODE);",
+        },
+    }, {
+        callbacks = {
+            [-1] = {
+                [events.pre_expand] = function(snippet, event_args)
+                    ensure_imports({ "com.onesoft.falcon.api.SessionConstants" }, snippet, event_args)
+                end,
+            },
+        },
+    }),
 }
