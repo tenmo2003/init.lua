@@ -59,7 +59,9 @@ return {
             end
 
             require("nvim-tree").setup {
-                disable_netrw = true,
+                disable_netrw = false,
+                hijack_unnamed_buffer_when_opening = false,
+                hijack_netrw = false,
                 on_attach = my_on_attach,
                 view = {
                     number = true,
