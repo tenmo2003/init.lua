@@ -43,8 +43,8 @@ set(
 )
 set("v", "<leader>s", [["zy:%s/<C-r>z/<C-r>z/gI<Left><Left><Left>]], { desc = "Change all occurrences of selection" })
 
-set("n", "<C-n>", [[/\<<C-r><C-w>\>]], { desc = "Search for word under cursor" })
-set("v", "<C-n>", [["zy/<C-r>z]], { desc = "Search for selection" })
+set("n", "<C-n>", [[/\<<C-r><C-w>\><CR>]], { desc = "Search for word under cursor" })
+set("v", "<C-n>", [["zy/<C-r>z<CR>]], { desc = "Search for selection" })
 set("n", "<leader>cx", "<cmd>!chmod +x %<CR>", { silent = true, desc = "Set executable" })
 
 set("n", "<leader>qc", function()
