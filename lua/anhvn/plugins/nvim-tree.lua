@@ -59,6 +59,7 @@ return {
             end
 
             require("nvim-tree").setup {
+                disable_netrw = true,
                 on_attach = my_on_attach,
                 view = {
                     number = true,
