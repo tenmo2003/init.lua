@@ -5,6 +5,9 @@ return {
         keys = {
             { "<leader>nt", "<cmd>NvimTreeFindFileToggle<cr>", desc = "Toggle NvimTree" },
         },
+        dependencies = {
+            "nvim-mini/mini.icons",
+        },
         config = function()
             local api = require "nvim-tree.api"
 
@@ -57,7 +60,6 @@ return {
 
             require("nvim-tree").setup {
                 on_attach = my_on_attach,
-                disable_netrw = true,
                 view = {
                     number = true,
                     relativenumber = true,
