@@ -31,12 +31,24 @@ return {
         opts = {},
     },
     {
+        "nvim-mini/mini.icons",
+        config = function()
+            require("mini.icons").setup()
+            MiniIcons.mock_nvim_web_devicons()
+        end,
+    },
+    {
         "nvim-mini/mini.files",
         version = false,
         config = function()
             local mini_files = require "mini.files"
 
-            mini_files.setup()
+            mini_files.setup {
+                mappings = {
+                    go_in = "L",
+                    go_in_plus = "l",
+                },
+            }
             vim.api.nvim_create_autocmd("User", {
                 pattern = "MiniFilesWindowUpdate",
                 callback = function(args)
@@ -72,13 +84,6 @@ return {
             vim.keymap.set("n", "-", function()
                 mini_files.open(vim.api.nvim_buf_get_name(0), true)
             end, { desc = "Open mini.files at current directory" })
-        end,
-    },
-    {
-        "nvim-mini/mini.icons",
-        config = function()
-            require("mini.icons").setup()
-            MiniIcons.mock_nvim_web_devicons()
         end,
     },
 }
