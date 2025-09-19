@@ -53,6 +53,15 @@ return {
 
             -- Telescope extensions
             require("telescope").load_extension "fzf"
+
+            vim.api.nvim_create_autocmd("User", {
+                pattern = "TelescopeFindPre",
+                callback = function()
+                    if _G.MiniFiles then
+                        _G.MiniFiles.close()
+                    end
+                end,
+            })
         end,
     },
 }
