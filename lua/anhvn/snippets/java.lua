@@ -71,14 +71,14 @@ return {
         t { ";" },
     }),
     s("psfi", {
-        t { "public static final int" },
+        t { "public static final int " },
         i(1, "name"),
         t { " = " },
         i(2, "value"),
         t { ";" },
     }),
     s("psfs", {
-        t { "public static final String" },
+        t { "public static final String " },
         i(1, "name"),
         t { " = " },
         i(2, "value"),
