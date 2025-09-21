@@ -48,6 +48,18 @@ return {
             }
         end,
         config = function()
+            local signs = {
+                DapBreakpoint = { text = "B", texthl = "WarningMsg", linehl = "", numhl = "" },
+                DapBreakpointCondition = { text = "C", texthl = "WarningMsg", linehl = "", numhl = "" },
+                DapBreakpointRejected = { text = "R", texthl = "WarningMsg", linehl = "", numhl = "" },
+                DapLogPoint = { text = "L", texthl = "WarningMsg", linehl = "", numhl = "" },
+                DapStopped = { text = "→", texthl = "WarningMsg", linehl = "debugPC", numhl = "" },
+            }
+
+            for type, sign in pairs(signs) do
+                vim.fn.sign_define(type, sign)
+            end
+
             local dap = require "dap"
             -- dap.set_log_level "DEBUG"
 
