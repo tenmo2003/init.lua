@@ -51,7 +51,7 @@ function ToggleFloatingTerminal()
         if vim.bo[state.floating.buf].buftype ~= "terminal" then
             vim.cmd.terminal()
         end
-        vim.cmd "normal i"
+        vim.cmd "startinsert"
     else
         vim.api.nvim_win_hide(state.floating.win)
     end
