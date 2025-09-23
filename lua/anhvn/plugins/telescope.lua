@@ -40,7 +40,9 @@ return {
                 builtin.grep_string { search = word }
             end, { desc = "Search WORD under the cursor" })
             set("n", "<leader>pc", builtin.git_commits, { desc = "Telescope: commits" })
-            set("n", "<leader>pb", builtin.buffers, { desc = "Telescope: buffers" })
+            set("n", "<leader>pb", function()
+                builtin.buffers { sort_mru = true }
+            end, { desc = "Telescope: buffers" })
             set("n", "<leader>bd", function()
                 builtin.diagnostics { bufnr = 0 }
             end, { desc = "View current buffer's diagnostics" })
