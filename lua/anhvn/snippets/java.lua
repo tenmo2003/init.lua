@@ -19,7 +19,13 @@ local function ensure_imports(classes, node, event_args)
     for i, line in ipairs(lines) do
         if line:match "^package " then
             package_line = i
-        elseif line:match "^import " then
+            break
+        end
+    end
+
+    for index = package_line + 1, #lines do
+        local line = lines[index]
+        if line:match "^import " then
             last_import_line = i
             -- Extract the import statement (remove 'import ' and ';')
             local import_statement = line:match "^import%s+(.+);?$"
