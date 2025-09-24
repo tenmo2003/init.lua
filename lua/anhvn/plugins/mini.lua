@@ -82,7 +82,10 @@ return {
             })
 
             vim.keymap.set("n", "-", function()
-                mini_files.open(vim.api.nvim_buf_get_name(0), true)
+                local ok = pcall(mini_files.open, vim.api.nvim_buf_get_name(0), true)
+                if not ok then
+                    mini_files.open(vim.uv.cwd(), true)
+                end
             end, { desc = "Open mini.files at current directory" })
         end,
     },
