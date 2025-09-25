@@ -204,6 +204,10 @@ return {
                     vim.keymap.set("i", "<C-h>", function()
                         vim.lsp.buf.signature_help()
                     end, { desc = "Signature help", buffer = opts.buffer })
+
+                    vim.keymap.set("n", "<M-h>", function()
+                        vim.lsp.buf.signature_help()
+                    end, { desc = "Signature help", buffer = opts.buffer })
                 end,
             })
         end,
