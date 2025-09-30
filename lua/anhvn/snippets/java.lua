@@ -26,7 +26,7 @@ local function ensure_imports(classes, node, event_args)
     for index = package_line + 1, #lines do
         local line = lines[index]
         if line:match "^import " then
-            last_import_line = i
+            last_import_line = index
             -- Extract the import statement (remove 'import ' and ';')
             local import_statement = line:match "^import%s+(.+);?$"
             if import_statement then
