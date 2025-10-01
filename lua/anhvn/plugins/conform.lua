@@ -14,9 +14,16 @@ return {
                 }
             end,
             formatters = {
-                prettierjava = {
+                prettierdjava = {
                     command = "prettierd",
                     args = { "$FILENAME" },
+                },
+                prettierjava = {
+                    command = "prettier",
+                    args = { "--stdin-filepath", "$FILENAME" },
+                    range_args = function(self, ctx)
+                        return { "--range-start", ctx.range["start"], "--range-end", ctx.range["end"] }
+                    end,
                 },
             },
             formatters_by_ft = {
@@ -26,14 +33,14 @@ return {
                 javascriptreact = { "prettierd" },
                 typescript = { "prettierd" },
                 typescriptreact = { "prettierd" },
-                java = { "prettierjava" },
+                java = { "prettierdjava" },
             },
             default_format_opts = {
                 lsp_format = "fallback",
             },
         }
 
-        vim.keymap.set("n", "<leader>fc", function()
+        vim.keymap.set("", "<leader>fc", function()
             conform.format { bufnr = 0 }
             print "Formatted"
         end, { desc = "Format with conform" })
