@@ -110,8 +110,8 @@ local config = {
     },
 
     on_attach = function(client, bufnr)
-        -- vim.hl.priorities.semantic_tokens = 95
-        client.server_capabilities.semanticTokensProvider = nil
+        vim.hl.priorities.semantic_tokens = 95
+        -- client.server_capabilities.semanticTokensProvider = nil
     end,
 }
 require("jdtls").start_or_attach(config)
