@@ -4,8 +4,20 @@ return {
         local conform = require "conform"
 
         conform.setup {
-            format_on_save = {
-                timeout_ms = 500,
+            format_on_save = function(bufnr)
+                local ignore_filetypes = { "java" }
+                if vim.tbl_contains(ignore_filetypes, vim.bo[bufnr].filetype) then
+                    return nil
+                end
+                return {
+                    timeout_ms = 500,
+                }
+            end,
+            formatters = {
+                prettierjava = {
+                    command = "prettierd",
+                    args = { "$FILENAME" },
+                },
             },
             formatters_by_ft = {
                 lua = { "stylua" },
@@ -14,6 +26,7 @@ return {
                 javascriptreact = { "prettierd" },
                 typescript = { "prettierd" },
                 typescriptreact = { "prettierd" },
+                java = { "prettierjava" },
             },
             default_format_opts = {
                 lsp_format = "fallback",
