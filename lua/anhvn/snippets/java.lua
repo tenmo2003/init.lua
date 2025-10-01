@@ -28,7 +28,7 @@ local function ensure_imports(classes, node, event_args)
         if line:match "^import " then
             last_import_line = index
             -- Extract the import statement (remove 'import ' and ';')
-            local import_statement = line:match "^import%s+(.+);?$"
+            local import_statement = line:match "^import%s+(.+);$"
             if import_statement then
                 existing_imports[import_statement] = true
             end
