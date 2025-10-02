@@ -61,7 +61,9 @@ local function ensure_imports(classes, node, event_args)
         insert_line = 0
     end
 
-    table.insert(classes_to_import, "") -- Add empty line after imports
+    if last_import_line <= 0 then
+        table.insert(classes_to_import, "") -- Add empty line after import when only package declaration is found
+    end
 
     vim.api.nvim_buf_set_lines(buf, insert_line, insert_line, false, classes_to_import)
 end
