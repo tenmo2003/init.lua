@@ -68,6 +68,19 @@ local function ensure_imports(classes, node, event_args)
     vim.api.nvim_buf_set_lines(buf, insert_line, insert_line, false, classes_to_import)
 end
 
+local function ensure_imports_setting(imports)
+    if type(imports) == "string" then
+        imports = { imports }
+    end
+    return {
+        [-1] = {
+            [events.pre_expand] = function(snippet, event_args)
+                ensure_imports(imports, snippet, event_args)
+            end,
+        },
+    }
+end
+
 return {
     s("psf", {
         t { "public static final " },
@@ -95,13 +108,7 @@ return {
     s("getset", {
         t { "@Getter", "@Setter" },
     }, {
-        callbacks = {
-            [-1] = {
-                [events.pre_expand] = function(snippet, event_args)
-                    ensure_imports({ "lombok.Getter", "lombok.Setter" }, snippet, event_args)
-                end,
-            },
-        },
+        callbacks = ensure_imports_setting { "lombok.Getter", "lombok.Setter" },
     }),
     s("code1945", {
         t {
@@ -111,12 +118,6 @@ return {
             "int code = client.get(SessionConstants.CODE);",
         },
     }, {
-        callbacks = {
-            [-1] = {
-                [events.pre_expand] = function(snippet, event_args)
-                    ensure_imports({ "com.onesoft.falcon.api.SessionConstants" }, snippet, event_args)
-                end,
-            },
-        },
+        callbacks = ensure_imports_setting "com.onesoft.falcon.api.SessionConstants",
     }),
 }
