@@ -4,6 +4,27 @@ local function trim(s)
     return (s:gsub("^%s*(.-)%s*$", "%1"))
 end
 
+local function get_package()
+    local filepath = vim.fn.expand "%:p"
+    local package_path = filepath:match "src/main/java/(.+)/[^/]+%.java$"
+    if package_path then
+        return "package " .. package_path:gsub("/", ".") .. ";"
+    end
+    package_path = filepath:match "src/java/(.+)/[^/]+%.java$"
+    if package_path then
+        return "package " .. package_path:gsub("/", ".") .. ";"
+    end
+    return ""
+end
+
+local function get_class_name()
+    local filename = vim.fn.expand "%:t:r"
+    if filename and filename ~= "" then
+        return filename
+    end
+    return "ClassName"
+end
+
 local function ensure_imports(classes, node, event_args)
     if type(classes) == "string" then
         classes = { classes }
@@ -110,6 +131,11 @@ return {
     }, {
         callbacks = ensure_imports_setting { "lombok.Getter", "lombok.Setter" },
     }),
+    s("gs", {
+        t { "@Getter", "@Setter" },
+    }, {
+        callbacks = ensure_imports_setting { "lombok.Getter", "lombok.Setter" },
+    }),
     s("code1945", {
         t {
             "if (!client.has(SessionConstants.CODE)) {",
@@ -120,4 +146,160 @@ return {
     }, {
         callbacks = ensure_imports_setting "com.onesoft.falcon.api.SessionConstants",
     }),
+    s(
+        "cs1945",
+        fmt(
+            [[
+{}
+
+import com.onesoft.falcon.sdk.message.common.Message;
+import lombok.Getter;
+import lombok.Setter;
+
+/**
+ * @author anhvn
+ * @since {}
+ */
+@Getter
+@Setter
+public class {} extends Message {{
+    {}
+
+    @Override
+    public String getEvent() {{
+        return "{}";
+    }}
+}}
+]],
+            {
+                f(function()
+                    return get_package()
+                end),
+                f(function()
+                    return os.date "%Y-%m-%d"
+                end),
+                f(function()
+                    return get_class_name()
+                end),
+                i(2, "// fields here"),
+                i(1, "event_name"),
+            }
+        )
+    ),
+    s(
+        "sc1945",
+        fmt(
+            [[
+{}
+
+import com.onesoft.falcon.sdk.message.common.SCMessage;
+import lombok.Getter;
+import lombok.Setter;
+
+/**
+ * @author anhvn
+ * @since {}
+ */
+@Getter
+@Setter
+public class {} extends SCMessage {{
+    {}
+
+    @Override
+    public String getEvent() {{
+        return "{}";
+    }}
+}}
+]],
+            {
+                f(function()
+                    return get_package()
+                end),
+                f(function()
+                    return os.date "%Y-%m-%d"
+                end),
+                f(function()
+                    return get_class_name()
+                end),
+                i(2, "// fields here"),
+                i(1, "event_name"),
+            }
+        )
+    ),
+    s(
+        "event1945",
+        fmt(
+            [[
+{}
+
+import com.corundumstudio.socketio.AckRequest;
+import com.corundumstudio.socketio.SocketIOClient;
+import com.corundumstudio.socketio.listener.DataListener;
+import com.onesoft.server.socketio.annotation.Event;
+
+/**
+ * @author anhvn
+ * @since {}
+ */
+@Event(name = "{}")
+public class {} implements DataListener<{}> {{
+    @Override
+    public void onData(SocketIOClient client, {} data, AckRequest ackSender)
+        throws Exception {{
+        {}
+    }}
+}}
+]],
+            {
+                f(function()
+                    return get_package()
+                end),
+                f(function()
+                    return os.date "%Y-%m-%d"
+                end),
+                i(1, "event_name"),
+                f(function()
+                    return get_class_name()
+                end),
+                i(2, "CSMessageType"),
+                f(function(args)
+                    return args[1][1]
+                end, { 2 }),
+                i(0, "// implementation here"),
+            }
+        )
+    ),
+    s(
+        "bpsingleton",
+        fmt(
+            [[
+    private {}() {{
+        {}
+    }}
+
+    public static {} getInstance() {{
+        return SingletonHolder.INSTANCE;
+    }}
+
+    private static class SingletonHolder {{
+        private static final {} INSTANCE = new {}();
+    }}
+]],
+            {
+                f(function()
+                    return get_class_name()
+                end),
+                i(0),
+                f(function()
+                    return get_class_name()
+                end),
+                f(function()
+                    return get_class_name()
+                end),
+                f(function()
+                    return get_class_name()
+                end),
+            }
+        )
+    ),
 }
