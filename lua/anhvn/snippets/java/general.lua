@@ -2,6 +2,37 @@
 
 local helpers = require "anhvn.snippets.java.helpers"
 
+---@param type string
+local function fill(type)
+    return fmt(
+        [[
+{}
+
+/**
+ * @author anhvn
+ * @since {}
+ */
+public {} {} {{
+
+    {}
+}}
+]],
+        {
+            f(function()
+                return helpers.get_package()
+            end),
+            f(function()
+                return os.date "%Y-%m-%d"
+            end),
+            t(type),
+            f(function()
+                return helpers.get_class_name()
+            end),
+            i(1, "// implementation"),
+        }
+    )
+end
+
 return {
     s("psf", {
         t { "public static final " },
@@ -36,35 +67,9 @@ return {
     }, {
         callbacks = helpers.ensure_imports_setting { "lombok.Getter", "lombok.Setter" },
     }),
-    s(
-        "fill",
-        fmt(
-            [[
-{}
-
-/**
- * @author anhvn
- * @since {}
- */
-public class {} {{
-
-    {}
-}}
-]],
-            {
-                f(function()
-                    return helpers.get_package()
-                end),
-                f(function()
-                    return os.date "%Y-%m-%d"
-                end),
-                f(function()
-                    return helpers.get_class_name()
-                end),
-                i(1, "// implementation"),
-            }
-        )
-    ),
+    s("mclass", fill "class"),
+    s("minterface", fill "interface"),
+    s("menum", fill "enum"),
     s(
         "bpsingleton",
         fmt(
