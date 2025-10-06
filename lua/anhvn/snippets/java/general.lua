@@ -71,6 +71,31 @@ return {
     s("minterface", fill "interface"),
     s("menum", fill "enum"),
     s(
+        "mexception",
+        fmt(
+            [[
+{}
+
+/**
+ * @author anhvn
+ * @since {}
+ */
+public class {} extends RuntimeException {{
+
+    public {}(String message) {{
+        super(message);
+    }}
+}}
+]],
+            {
+                t(helpers.get_package()),
+                t(os.date "%Y-%m-%d"),
+                t(helpers.get_class_name()),
+                t(helpers.get_class_name()),
+            }
+        )
+    ),
+    s(
         "bpsingleton",
         fmt(
             [[
