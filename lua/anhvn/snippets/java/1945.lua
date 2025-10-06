@@ -39,15 +39,9 @@ public class {} extends Message {{
 }}
 ]],
             {
-                f(function()
-                    return helpers.get_package()
-                end),
-                f(function()
-                    return os.date "%Y-%m-%d"
-                end),
-                f(function()
-                    return helpers.get_class_name()
-                end),
+                t(helpers.get_package()),
+                t(os.date "%Y-%m-%d"),
+                t(helpers.get_class_name()),
                 i(2, "// fields here"),
                 i(1, "event_name"),
             }
@@ -79,15 +73,9 @@ public class {} extends SCMessage {{
 }}
 ]],
             {
-                f(function()
-                    return helpers.get_package()
-                end),
-                f(function()
-                    return os.date "%Y-%m-%d"
-                end),
-                f(function()
-                    return helpers.get_class_name()
-                end),
+                t(helpers.get_package()),
+                t(os.date "%Y-%m-%d"),
+                t(helpers.get_class_name()),
                 i(2, "// fields here"),
                 i(1, "event_name"),
             }
@@ -118,16 +106,10 @@ public class {} implements DataListener<{}> {{
 }}
 ]],
             {
-                f(function()
-                    return helpers.get_package()
-                end),
-                f(function()
-                    return os.date "%Y-%m-%d"
-                end),
+                t(helpers.get_package()),
+                t(os.date "%Y-%m-%d"),
                 i(1, "event_name"),
-                f(function()
-                    return helpers.get_class_name()
-                end),
+                t(helpers.get_class_name()),
                 i(2, "CSMessageType"),
                 f(function(args)
                     return args[1][1]
