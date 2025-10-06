@@ -55,7 +55,12 @@ function M.ensure_imports(classes, node, event_args)
             if import_statement then
                 existing_imports[import_statement] = true
             end
-        elseif line:match "^[^/]" and trim(line) ~= "" and not line:match "^package " and not line:match "^import " then
+        elseif
+            line:match "^[^/]"
+            and M.trim(line) ~= ""
+            and not line:match "^package "
+            and not line:match "^import "
+        then
             break
         end
     end
