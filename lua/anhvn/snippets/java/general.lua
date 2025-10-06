@@ -37,6 +37,35 @@ return {
         callbacks = helpers.ensure_imports_setting { "lombok.Getter", "lombok.Setter" },
     }),
     s(
+        "fill",
+        fmt(
+            [[
+{}
+
+/**
+ * @author anhvn
+ * @since {}
+ */
+public class {} {{
+
+    {}
+}}
+]],
+            {
+                f(function()
+                    return helpers.get_package()
+                end),
+                f(function()
+                    return os.date "%Y-%m-%d"
+                end),
+                f(function()
+                    return helpers.get_class_name()
+                end),
+                i(1, "// implementation"),
+            }
+        )
+    ),
+    s(
         "bpsingleton",
         fmt(
             [[
