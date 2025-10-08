@@ -153,3 +153,87 @@ vim.keymap.set(
 vim.cmd [[setlocal makeprg=mvn\ clean\ compile]]
 
 require "anhvn.dap.java"
+
+if vim.g.java_run_main_command then
+    return
+end
+
+vim.g.java_run_main_command = true
+
+vim.api.nvim_create_user_command("RunMain", function(args)
+    local buf = vim.api.nvim_get_current_buf()
+    local filetype = vim.bo[buf].filetype
+
+    -- Check if current file is Java
+    if filetype ~= "java" then
+        vim.notify("RunMain: Not a Java file", vim.log.levels.ERROR)
+        return
+    end
+
+    local filepath = vim.fn.expand "%:p"
+    local filename = vim.fn.expand "%:t:r" -- filename without extension
+
+    -- Extract package from file path
+    local package_path = filepath:match "src/main/java/(.+)/[^/]+%.java$"
+    if not package_path then
+        package_path = filepath:match "src/java/(.+)/[^/]+%.java$"
+    end
+
+    if not package_path then
+        vim.notify("RunMain: Could not determine package structure", vim.log.levels.ERROR)
+        return
+    end
+
+    -- Convert path to package name
+    local package_name = package_path:gsub("/", ".")
+    local fully_qualified_class = package_name .. "." .. filename
+
+    -- Find project root (directory containing src/)
+    local project_root = filepath:match "(.+)/src/"
+    if not project_root then
+        vim.notify("RunMain: Could not find project root", vim.log.levels.ERROR)
+        return
+    end
+
+    -- Check if it's a Maven/Gradle project
+    local has_maven = vim.fn.filereadable(project_root .. "/pom.xml") == 1
+    local has_gradle = vim.fn.filereadable(project_root .. "/build.gradle") == 1
+        or vim.fn.filereadable(project_root .. "/build.gradle.kts") == 1
+
+    local cmd
+    if has_maven then
+        -- Use Maven exec plugin
+        cmd = string.format(
+            "cd %s && mvn exec:java -Dexec.mainClass=%s",
+            vim.fn.shellescape(project_root),
+            fully_qualified_class
+        )
+    elseif has_gradle then
+        -- Use Gradle run task (requires application plugin)
+        cmd = string.format(
+            "cd %s && ./gradlew run -PmainClass=%s",
+            vim.fn.shellescape(project_root),
+            fully_qualified_class
+        )
+    else
+        -- Fallback: use javac + java
+        cmd = string.format(
+            "cd %s && javac -d target/classes %s && java -cp target/classes %s",
+            vim.fn.shellescape(project_root),
+            vim.fn.shellescape(filepath),
+            fully_qualified_class
+        )
+    end
+
+    -- Allow passing additional arguments
+    if args.args ~= "" then
+        cmd = cmd .. " " .. args.args
+    end
+
+    -- Run in terminal split
+    vim.cmd "belowright 15split"
+    vim.cmd("terminal " .. 'echo "Running: ' .. fully_qualified_class .. '" && ' .. cmd)
+end, {
+    desc = "Run Java Main Method",
+    nargs = "*", -- Allow additional arguments
+})
