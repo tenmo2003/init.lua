@@ -29,6 +29,26 @@ if not status then
 end
 local extendedClientCapabilities = jdtls.extendedClientCapabilities
 
+-- this will be merged with vim.lsp.protocol.make_client_capabilities()
+-- overrides the properties to show documentation in nvim-cmp
+local capabilities = {
+    textDocument = {
+        completion = {
+            completionItem = {
+                resolveSupport = {
+                    properties = {
+                        "documentation",
+                        "additionalTextEdits",
+                        "insertTextFormat",
+                        "command",
+                        "detail",
+                    },
+                },
+            },
+        },
+    },
+}
+
 local config = {
     cmd = {
         jdk21_home .. "/bin/java",
@@ -59,6 +79,7 @@ local config = {
         "settings.gradle.kts",
     }, -- priorize multi-module projects
 
+    capabilities = capabilities,
     settings = {
         java = {
             signatureHelp = { enabled = true },
