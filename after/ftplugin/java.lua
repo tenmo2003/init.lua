@@ -31,23 +31,23 @@ local extendedClientCapabilities = jdtls.extendedClientCapabilities
 
 -- this will be merged with vim.lsp.protocol.make_client_capabilities()
 -- overrides the properties to show documentation in nvim-cmp
--- local capabilities = {
---     textDocument = {
---         completion = {
---             completionItem = {
---                 resolveSupport = {
---                     properties = {
---                         "documentation",
---                         "additionalTextEdits",
---                         "insertTextFormat",
---                         "command",
---                         "detail",
---                     },
---                 },
---             },
---         },
---     },
--- }
+local capabilities = {
+    textDocument = {
+        completion = {
+            completionItem = {
+                resolveSupport = {
+                    properties = {
+                        "documentation",
+                        "additionalTextEdits",
+                        "insertTextFormat",
+                        "command",
+                        "detail",
+                    },
+                },
+            },
+        },
+    },
+}
 
 local config = {
     cmd = {
