@@ -18,10 +18,16 @@ public {} {} {{
 }}
 ]],
         {
-            t(helpers.get_package()),
-            t(os.date "%Y-%m-%d"),
+            f(function()
+                return helpers.get_package()
+            end),
+            f(function()
+                return os.date "%Y-%m-%d"
+            end),
             t(type),
-            t(helpers.get_class_name()),
+            f(function()
+                return helpers.get_class_name()
+            end),
             i(1, "// implementation"),
         }
     )
@@ -106,11 +112,19 @@ public class {} extends RuntimeException {{
     }}
 ]],
             {
-                t(helpers.get_class_name()),
+                f(function()
+                    return helpers.get_class_name()
+                end),
                 i(0),
-                t(helpers.get_class_name()),
-                t(helpers.get_class_name()),
-                t(helpers.get_class_name()),
+                f(function()
+                    return helpers.get_class_name()
+                end),
+                f(function()
+                    return helpers.get_class_name()
+                end),
+                f(function()
+                    return helpers.get_class_name()
+                end),
             }
         )
     ),
