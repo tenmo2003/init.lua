@@ -21,13 +21,15 @@ return {
         name = "catppuccin",
         priority = 1000,
         config = function()
+            U = require "catppuccin.utils.colors"
             require("catppuccin").setup {
                 custom_highlights = function(colors)
                     return {
                         LineNr = { fg = colors.text },
                         LineNrAbove = { fg = colors.surface2 },
                         LineNrBelow = { fg = colors.surface2 },
-                        Pmenu = { bg = "#363a4f", fg = colors.overlay2 },
+                        Pmenu = { bg = U.darken(colors.surface0, 0.8, colors.crust), fg = colors.overlay2 },
+                        PmenuSel = { bg = colors.surface1 },
                         debugPC = { bg = colors.surface1 },
                     }
                 end,
