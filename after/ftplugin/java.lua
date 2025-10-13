@@ -258,3 +258,5 @@ end, {
     desc = "Run Java Main Method",
     nargs = "*", -- Allow additional arguments
 })
+
+vim.keymap.set("n", "<leader>rm", "<Cmd>RunMain<CR>", { desc = "Run Main Java" })
