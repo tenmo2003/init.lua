@@ -132,6 +132,7 @@ return {
                     },
                 },
                 formatting = {
+                    fields = { "kind", "abbr", "menu" },
                     format = lspkind.cmp_format {
                         mode = "symbol", -- show only symbol annotations
                         maxwidth = {
