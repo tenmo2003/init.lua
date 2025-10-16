@@ -78,3 +78,77 @@ autocmd("BufEnter", {
         vim.keymap.set("n", "<S-M-o>", ":OrganizeImports<CR>", { buffer = true })
     end,
 })
+
+autocmd("LspAttach", {
+    group = augroup("OnLSPAttach", {}),
+    callback = function(e)
+        local opts = { buffer = e.buf }
+
+        vim.keymap.set("n", "gD", function()
+            vim.lsp.buf.declaration()
+        end, { buffer = opts.buffer, desc = "Go to declaration" })
+
+        vim.keymap.set("n", "<leader>gt", function()
+            vim.lsp.buf.type_definition()
+        end, { buffer = opts.buffer, desc = "Go to type definition" })
+
+        vim.keymap.set(
+            "n",
+            "gd",
+            require("telescope.builtin").lsp_definitions,
+            { desc = "Go to definition", buffer = opts.buffer }
+        )
+
+        vim.keymap.set(
+            "n",
+            "gI",
+            require("telescope.builtin").lsp_implementations,
+            { desc = "Go to implementations", buffer = opts.buffer }
+        )
+
+        vim.keymap.set("n", "K", function()
+            vim.lsp.buf.hover { border = "rounded" }
+        end, { desc = "Show hover information", buffer = opts.buffer })
+
+        vim.keymap.set(
+            "n",
+            "<leader>bs",
+            require("telescope.builtin").lsp_document_symbols,
+            { desc = "Search document symbols", buffer = opts.buffer }
+        )
+
+        vim.keymap.set(
+            "n",
+            "<leader>ws",
+            require("telescope.builtin").lsp_dynamic_workspace_symbols,
+            { desc = "Search workspace symbols", buffer = opts.buffer }
+        )
+
+        vim.keymap.set({ "n", "x" }, "<leader>ca", function()
+            vim.lsp.buf.code_action()
+        end, { desc = "Code action", buffer = opts.buffer })
+
+        vim.keymap.set(
+            "n",
+            "<leader>gr",
+            require("telescope.builtin").lsp_references,
+            { desc = "List references", buffer = opts.buffer }
+        )
+
+        vim.keymap.set("n", "<leader>rn", function()
+            vim.lsp.buf.rename()
+        end, { desc = "Rename symbol", buffer = opts.buffer })
+
+        vim.keymap.set("n", "<F2>", function()
+            vim.lsp.buf.rename()
+        end, { desc = "Rename symbol", buffer = opts.buffer })
+
+        vim.keymap.set("i", "<C-h>", function()
+            vim.lsp.buf.signature_help { border = "rounded" }
+        end, { desc = "Signature help", buffer = opts.buffer })
+
+        vim.keymap.set("n", "<M-h>", function()
+            vim.lsp.buf.signature_help { border = "rounded" }
+        end, { desc = "Signature help", buffer = opts.buffer })
+    end,
+})
