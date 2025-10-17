@@ -23,6 +23,10 @@ return {
                     vim.cmd.Git "push"
                 end, opts)
 
+                vim.keymap.set("n", "<leader>gfp", function()
+                    vim.cmd.Git "push --force"
+                end, opts)
+
                 vim.keymap.set("n", "<leader>gl", function()
                     vim.cmd.Git "pull"
                 end, opts)
