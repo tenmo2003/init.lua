@@ -3,7 +3,7 @@
 local helpers = require "anhvn.snippets.java.helpers"
 
 return {
-    s("code1945", {
+    s("codegs", {
         t {
             "if (!session.hasKey(AccountConst.CODE))",
             "\treturn;",
