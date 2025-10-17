@@ -47,7 +47,7 @@ return {
 
             cmdline = {
                 keymap = {
-                    ["<Tab>"] = { "show", "accept" },
+                    ["<Tab>"] = { "show_and_insert_or_accept_single", "accept" },
                 },
             },
 
