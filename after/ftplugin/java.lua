@@ -251,9 +251,15 @@ vim.api.nvim_create_user_command("RunMain", function(args)
         cmd = cmd .. " " .. args.args
     end
 
-    -- Run in terminal split
+    -- Close existing terminal if it exists
+    if vim.g.run_main_term_buf and vim.api.nvim_buf_is_valid(vim.g.run_main_term_buf) then
+        vim.api.nvim_buf_delete(vim.g.run_main_term_buf, { force = true })
+    end
+
+    -- Create new terminal split
     vim.cmd "belowright 15split"
     vim.cmd("terminal " .. 'echo "Running: ' .. fully_qualified_class .. '" && ' .. cmd)
+    vim.g.run_main_term_buf = vim.api.nvim_get_current_buf()
 end, {
     desc = "Run Java Main Method",
     nargs = "*", -- Allow additional arguments
