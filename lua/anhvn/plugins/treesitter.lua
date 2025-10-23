@@ -22,6 +22,31 @@ return {
                             ["ir"] = "@return.inner",
                         },
                     },
+                    swap = {
+                        enable = true,
+                        swap_next = {
+                            ["<leader>a"] = "@parameter.inner",
+                        },
+                        swap_previous = {
+                            ["<leader>A"] = "@parameter.inner",
+                        },
+                    },
+                    move = {
+                        enable = true,
+                        set_jumps = false, -- whether to set jumps in the jumplist
+                        goto_next_start = {
+                            ["]f"] = "@function.outer",
+                        },
+                        goto_next_end = {
+                            ["]F"] = "@function.outer",
+                        },
+                        goto_previous_start = {
+                            ["[f"] = "@function.outer",
+                        },
+                        goto_previous_end = {
+                            ["[F"] = "@function.outer",
+                        },
+                    },
                 },
                 -- A list of parser names, or "all" (the listed parsers MUST always be installed)
                 ensure_installed = {
