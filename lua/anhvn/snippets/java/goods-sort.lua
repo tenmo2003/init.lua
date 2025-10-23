@@ -7,7 +7,7 @@ return {
         t {
             "if (!session.hasKey(AccountConst.CODE))",
             "\treturn;",
-            "int code = (Integer) session.get(AccountConst.CODE)",
+            "int code = (Integer) session.get(AccountConst.CODE);",
         },
     }, {
         callbacks = helpers.ensure_imports_setting { "com.os.falcon.core_account.consts.AccountConst" },
