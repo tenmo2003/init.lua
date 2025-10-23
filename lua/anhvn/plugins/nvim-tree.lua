@@ -67,7 +67,7 @@ return {
                     number = true,
                     relativenumber = true,
                     side = "right",
-                    width = "50%",
+                    width = "30%",
                 },
                 renderer = {
                     group_empty = true,
