@@ -26,6 +26,9 @@ return {
             local builtin = require "telescope.builtin"
             -- Project related keymaps
             set("n", "<leader>pf", builtin.find_files, { desc = "Telescope find files" })
+            set("n", "<leader>pif", function()
+                builtin.find_files { no_ignore = true }
+            end, { desc = "Telescope find files including ignored" })
             set("n", "<leader>pg", builtin.live_grep, { desc = "Telescope live grep" })
             set("n", "<C-p>", builtin.git_files, { desc = "Telescope git files" })
             set("n", "<leader>ps", function()
