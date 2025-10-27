@@ -27,6 +27,7 @@ set("i", "<C-c>", "<Esc>")
 set("n", "Q", "<nop>")
 set("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>")
 set("n", "<C-h>", "<cmd>silent !tmux neww tmux-cht.sh<CR>")
+set("n", "<M-g>", "<cmd>!open-git-remote.sh<CR>")
 
 set("n", "<leader>fb", "mzgg=G`z", { desc = "Built-in format" })
 
