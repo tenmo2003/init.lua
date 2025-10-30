@@ -25,10 +25,10 @@ return {
                     swap = {
                         enable = true,
                         swap_next = {
-                            ["<leader>a"] = "@parameter.inner",
+                            ["<leader>as"] = "@parameter.inner",
                         },
                         swap_previous = {
-                            ["<leader>A"] = "@parameter.inner",
+                            ["<leader>aS"] = "@parameter.inner",
                         },
                     },
                     move = {
@@ -57,6 +57,7 @@ return {
                     "query",
                     "markdown",
                     "markdown_inline",
+                    "yaml",
                     "javascript",
                     "typescript",
                     "tsx",

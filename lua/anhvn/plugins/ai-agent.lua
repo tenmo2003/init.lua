@@ -5,10 +5,20 @@ return {
         dependencies = {
             "nvim-lua/plenary.nvim",
             "nvim-treesitter/nvim-treesitter",
+            {
+                "MeanderingProgrammer/render-markdown.nvim",
+                ft = { "markdown", "codecompanion" },
+            },
         },
         opts = function()
-            vim.keymap.set({ "n", "v" }, "<leader>cca", "<cmd>CodeCompanionActions<cr>")
-            vim.keymap.set({ "n", "v" }, "<leader>cct", "<cmd>CodeCompanionChat Toggle<cr>")
+            local set = function(mode, lhs, rhs)
+                vim.keymap.set(mode, lhs, rhs, { noremap = true, silent = true })
+            end
+
+            set({ "n", "v" }, "<leader>aa", "<cmd>CodeCompanionActions<cr>")
+            set({ "n", "v" }, "<leader>at", "<cmd>CodeCompanionChat Toggle<cr>")
+            set("v", "ga", "<cmd>CodeCompanionChat Add<cr>")
+
             return {
                 adapters = {
                     http = {
@@ -32,6 +42,12 @@ return {
                         adapter = "anthropic",
                         model = "claude-sonnet-4-5-20250929",
                         -- model = "claude-sonnet-4-20250514",
+                        keymaps = {
+                            close = {
+                                modes = { n = "<C-c>", i = "<End>" },
+                                opts = {},
+                            },
+                        },
                     },
                     inline = {
                         adapter = "anthropic",
