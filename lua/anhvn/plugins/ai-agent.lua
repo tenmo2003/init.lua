@@ -3,6 +3,7 @@ return {
         "augmentcode/augment.vim",
         dependencies = { { "MeanderingProgrammer/render-markdown.nvim", ft = { "markdown", "codecompanion" } } },
         config = function()
+            vim.g.augment_disable_completions = true
             vim.keymap.set("n", "<leader>at", "<cmd>Augment chat-toggle<cr>")
         end,
     },
