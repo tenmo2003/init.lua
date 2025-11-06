@@ -50,8 +50,12 @@ set("n", "<leader>cx", "<cmd>!chmod +x %<CR>", { silent = true, desc = "Set exec
 
 set("n", "<leader>qc", function()
     vim.cmd "cclose"
-    vim.fn.setqflist {}
-end, { desc = "Close and clear quickfix list" })
+    -- vim.fn.setqflist {}
+end, { desc = "Close quickfix list" })
+
+set("n", "<leader>qo", function()
+    vim.cmd "copen"
+end, { desc = "Open quickfix list" })
 
 set("n", "<leader>tn", function()
     vim.cmd "tabnew"
