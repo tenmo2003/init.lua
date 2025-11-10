@@ -1,6 +1,7 @@
 return {
     {
         "iamkarasik/sonarqube.nvim",
+        event = "VeryLazy",
         config = function()
             local opts = {}
 
