@@ -255,3 +255,30 @@ end, {
 })
 
 vim.keymap.set("n", "<leader>rm", "<Cmd>RunMain<CR>", { desc = "Run Main Java" })
+vim.keymap.set("v", "<leader>tc", function()
+    local start_line = vim.fn.line "'<"
+    local end_line = vim.fn.line "'>"
+    local indent = string.rep(" ", vim.fn.indent(start_line))
+
+    vim.cmd.normal ">>"
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<esc>", true, false, true), "nx", false)
+
+    local selected_lines = vim.fn.getline(start_line, end_line)
+
+    local try_catch = {
+        indent .. "try {",
+    }
+
+    ---@diagnostic disable-next-line: param-type-mismatch
+    for _, line in ipairs(selected_lines) do
+        table.insert(try_catch, line)
+    end
+
+    table.insert(try_catch, indent .. "} catch (Exception e) {")
+    table.insert(try_catch, indent .. "    // TODO: handle exception")
+    table.insert(try_catch, indent .. "}")
+
+    vim.api.nvim_buf_set_lines(0, start_line - 1, end_line, false, try_catch)
+
+    vim.fn.cursor(start_line + #selected_lines + 2, #indent + 5)
+end, { desc = "Wrap selection in try-catch (Java)" })
