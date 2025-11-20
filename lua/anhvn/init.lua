@@ -12,6 +12,14 @@ function R(name)
     require("plenary.reload").reload_module(name)
 end
 
+autocmd("VimEnter", {
+    group = augroup("clearjumps_on_startup", {}),
+    pattern = "*",
+    callback = function()
+        vim.cmd "clearjumps"
+    end,
+})
+
 autocmd("TextYankPost", {
     group = yank_group,
     pattern = "*",
