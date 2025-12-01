@@ -9,7 +9,7 @@ return {
 
         dependencies = {
             "rafamadriz/friendly-snippets",
-            "mlaursen/vim-react-snippets",
+            { "mlaursen/vim-react-snippets", opts = {} },
         },
 
         config = function()
@@ -37,8 +37,6 @@ return {
                     ls.change_choice(1)
                 end
             end, { silent = true })
-
-            require("vim-react-snippets").lazy_load()
         end,
     },
 }
