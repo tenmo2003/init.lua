@@ -256,29 +256,33 @@ end, {
 
 vim.keymap.set("n", "<leader>rm", "<Cmd>RunMain<CR>", { desc = "Run Main Java" })
 vim.keymap.set("v", "<leader>tc", function()
+    local esc = vim.api.nvim_replace_termcodes("<esc>", true, false, true)
+    vim.api.nvim_feedkeys(esc, "x", false) -- 'x' flag forces immediate execution
+
     local start_line = vim.fn.line "'<"
     local end_line = vim.fn.line "'>"
-    local indent = string.rep(" ", vim.fn.indent(start_line))
 
-    vim.cmd.normal ">>"
-    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<esc>", true, false, true), "nx", false)
+    local lines = vim.api.nvim_buf_get_lines(0, start_line - 1, end_line, false)
 
-    local selected_lines = vim.fn.getline(start_line, end_line)
+    local indent_width = vim.bo.shiftwidth
+    local expand_tab = vim.bo.expandtab
+    local indent_char = expand_tab and string.rep(" ", indent_width) or "\t"
 
-    local try_catch = {
-        indent .. "try {",
-    }
+    local base_indent = string.match(lines[1], "^%s*") or ""
 
-    ---@diagnostic disable-next-line: param-type-mismatch
-    for _, line in ipairs(selected_lines) do
-        table.insert(try_catch, line)
+    local try_catch = { base_indent .. "try {" }
+
+    for _, line in ipairs(lines) do
+        table.insert(try_catch, indent_char .. line)
     end
 
-    table.insert(try_catch, indent .. "} catch (Exception e) {")
-    table.insert(try_catch, indent .. "    // TODO: handle exception")
-    table.insert(try_catch, indent .. "}")
+    table.insert(try_catch, base_indent .. "} catch (Exception e) {")
+    table.insert(try_catch, base_indent .. indent_char .. "// TODO: handle exception")
+    table.insert(try_catch, base_indent .. "}")
 
     vim.api.nvim_buf_set_lines(0, start_line - 1, end_line, false, try_catch)
 
-    vim.fn.cursor(start_line + #selected_lines + 2, #indent + 5)
+    local cursor_row = start_line + #lines + 2
+    local cursor_col = #base_indent + #indent_char
+    vim.api.nvim_win_set_cursor(0, { cursor_row, cursor_col })
 end, { desc = "Wrap selection in try-catch (Java)" })
