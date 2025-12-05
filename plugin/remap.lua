@@ -38,7 +38,7 @@ set("n", "<leader>j", "<cmd>lprev<CR>zz")
 
 set(
     "n",
-    "<leader>s",
+    "<leader>sw",
     [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
     { desc = "Change all occurrences of word under cursor" }
 )
