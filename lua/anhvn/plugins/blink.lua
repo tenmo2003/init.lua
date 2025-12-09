@@ -47,16 +47,15 @@ return {
 
             cmdline = {
                 keymap = {
-                    ["<Tab>"] = { "show", "accept" },
                     ["<C-n>"] = {
                         function(cmp)
-                            cmp.select_next { auto_insert = false }
+                            return cmp.select_next { auto_insert = false }
                         end,
                         "fallback",
                     },
                     ["<C-p>"] = {
                         function(cmp)
-                            cmp.select_prev { auto_insert = false }
+                            return cmp.select_prev { auto_insert = false }
                         end,
                         "fallback",
                     },
