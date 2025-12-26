@@ -24,7 +24,7 @@ return {
                 end, opts)
 
                 vim.keymap.set("n", "<leader>gfp", function()
-                    vim.cmd.Git "push --force"
+                    vim.cmd.Git "push --force-with-lease"
                 end, opts)
 
                 vim.keymap.set("n", "<leader>gl", function()
