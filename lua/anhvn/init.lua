@@ -31,6 +31,14 @@ autocmd("TextYankPost", {
     end,
 })
 
+autocmd("ColorScheme", {
+    group = augroup("anhvn_general_colorscheme_autocmd", {}),
+    pattern = "*",
+    callback = function()
+        vim.cmd.source(vim.fn.stdpath "config" .. "/plugin/statusline.lua")
+    end,
+})
+
 autocmd("BufWritePre", {
     group = anhvn,
     pattern = "*",
