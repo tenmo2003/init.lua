@@ -59,6 +59,7 @@ return {
                         end,
                         "fallback",
                     },
+                    ["<Tab>"] = { "accept", "show_and_insert_or_accept_single", "select_next" },
                 },
             },
 
