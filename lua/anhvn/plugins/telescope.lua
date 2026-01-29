@@ -34,6 +34,9 @@ return {
             set("n", "<leader>ps", function()
                 builtin.grep_string { search = vim.fn.input "Grep > " }
             end, { desc = "Search string" })
+            set("v", "<leader>ps", function()
+                builtin.grep_string()
+            end, { desc = "Search selection" })
             set("n", "<leader>pws", function()
                 local word = vim.fn.expand "<cword>"
                 builtin.grep_string { search = word }
