@@ -168,3 +168,7 @@ autocmd("LspAttach", {
         end, { desc = "Signature help", buffer = opts.buffer })
     end,
 })
+
+-- Automatically update files when changed elsewhere
+vim.cmd [[set autoread]]
+vim.cmd [[autocmd FocusGained * checktime]]
