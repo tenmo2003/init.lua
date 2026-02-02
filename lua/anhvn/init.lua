@@ -12,14 +12,6 @@ function R(name)
     require("plenary.reload").reload_module(name)
 end
 
-autocmd("VimEnter", {
-    group = augroup("clearjumps_on_startup", {}),
-    pattern = "*",
-    callback = function()
-        vim.cmd "clearjumps"
-    end,
-})
-
 autocmd("TextYankPost", {
     group = yank_group,
     pattern = "*",
@@ -172,3 +164,9 @@ autocmd("LspAttach", {
 -- Automatically update files when changed elsewhere
 vim.cmd [[set autoread]]
 vim.cmd [[autocmd FocusGained * checktime]]
+
+local shada_path = vim.fn.stdpath "state" .. "/shada/"
+vim.fn.mkdir(shada_path, "p")
+
+local cwd = vim.fn.getcwd():gsub("/", "%%"):gsub(":", "%%")
+vim.opt.shadafile = shada_path .. cwd .. ".shada"
