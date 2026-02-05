@@ -88,6 +88,7 @@ return {
                     enabled = true,
                 },
             },
+            follow_tab = true,
         },
         keys = function()
             local dap_view = require "dap-view"
