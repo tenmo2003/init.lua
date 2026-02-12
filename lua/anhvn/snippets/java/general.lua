@@ -3,7 +3,7 @@
 local helpers = require "anhvn.snippets.java.helpers"
 
 ---@param type string
-local function fill(type)
+local function blueprint(type)
     return fmt(
         [[
 {}
@@ -67,9 +67,10 @@ return {
     }, {
         callbacks = helpers.ensure_imports_setting { "lombok.Getter", "lombok.Setter" },
     }),
-    s("mclass", fill "class"),
-    s("minterface", fill "interface"),
-    s("menum", fill "enum"),
+    s("mclass", blueprint "class"),
+    s("minterface", blueprint "interface"),
+    s("menum", blueprint "enum"),
+    s("mannotation", blueprint "@interface"),
     s(
         "mexception",
         fmt(
