@@ -1,11 +1,22 @@
 local home = vim.loop.os_uname().sysname == "Windows_NT" and os.getenv "USERPROFILE" -- Windows
     or os.getenv "HOME" -- Unix-like
 
-local jdk8_home = "/opt/jdk-8"
-local jdk11_home = "/opt/jdk-11"
-local jdk21_home = "/opt/jdk-21.0.6"
+local default_jdk = "/opt/jdk-21.0.6"
 
-vim.uv.os_setenv("JAVA_HOME", jdk21_home)
+local jdk_home_mappings = {
+    ["/opt/jdk-8"] = "JavaSE-8",
+    ["/opt/jdk-11"] = "JavaSE-11",
+    ["/opt/jdk-21.0.6"] = "JavaSE-21",
+}
+
+local runtimes = {}
+for java_home, name in pairs(jdk_home_mappings) do
+    if vim.fn.isdirectory(java_home) == 1 then
+        table.insert(runtimes, { name = name, path = java_home })
+    end
+end
+
+vim.uv.os_setenv("JAVA_HOME", default_jdk)
 
 local workspace_path = home .. "/.local/share/nvim/jdtls-workspace/"
 local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
@@ -51,7 +62,7 @@ local capabilities = {
 
 local config = {
     cmd = {
-        jdk21_home .. "/bin/java",
+        default_jdk .. "/bin/java",
         "-Declipse.application=org.eclipse.jdt.ls.core.id1",
         "-Dosgi.bundles.defaultStartLevel=4",
         "-Declipse.product=org.eclipse.jdt.ls.core.product",
@@ -105,21 +116,7 @@ local config = {
                 -- See https://github.com/eclipse/eclipse.jdt.ls/wiki/Running-the-JAVA-LS-server-from-the-command-line#initialize-request
                 -- And search for `interface RuntimeOption`
                 -- The `name` is NOT arbitrary, but must match one of the elements from `enum ExecutionEnvironment` in the link above
-                runtimes = {
-                    {
-                        name = "JavaSE-1.8",
-                        path = jdk8_home,
-                    },
-                    {
-                        name = "JavaSE-11",
-                        path = jdk11_home,
-                    },
-                    {
-                        name = "JavaSE-21",
-                        path = jdk21_home,
-                        default = true,
-                    },
-                },
+                runtimes = runtimes,
             },
         },
     },
