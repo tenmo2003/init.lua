@@ -4,6 +4,7 @@ return {
         dependencies = {
             "nvim-lua/plenary.nvim",
             { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+            { "nvim-telescope/telescope-ui-select.nvim" },
         },
         config = function()
             require("telescope").setup {
@@ -61,6 +62,7 @@ return {
 
             -- Telescope extensions
             require("telescope").load_extension "fzf"
+            require("telescope").load_extension "ui-select"
 
             vim.api.nvim_create_autocmd("User", {
                 pattern = "TelescopeFindPre",
