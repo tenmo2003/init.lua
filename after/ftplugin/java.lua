@@ -3,8 +3,11 @@ local home = vim.loop.os_uname().sysname == "Windows_NT" and os.getenv "USERPROF
 
 local default_jdk = "/opt/jdk-21.0.6"
 
+-- See https://github.com/eclipse/eclipse.jdt.ls/wiki/Running-the-JAVA-LS-server-from-the-command-line#initialize-request
+-- And search for `interface RuntimeOption`
+-- The `name` is NOT arbitrary, but must match one of the elements from `enum ExecutionEnvironment` in the link above
 local jdk_home_mappings = {
-    ["/opt/jdk-8"] = "JavaSE-8",
+    ["/opt/jdk-8"] = "JavaSE-1.8",
     ["/opt/jdk-11"] = "JavaSE-11",
     ["/opt/jdk-21.0.6"] = "JavaSE-21",
 }
