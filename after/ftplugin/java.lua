@@ -336,10 +336,16 @@ vim.api.nvim_create_user_command("DebugMain", function(args)
         end
     end
 
-    -- TODO: fallback to new tab
-    local tmux_cmd =
-        string.format("tmux neww -n 'Spring Debug' 'bash -c \"%s\"; echo; echo Press enter to close...; read'", run_cmd)
-    vim.cmd("silent !" .. tmux_cmd)
+    if os.getenv "TMUX" ~= nil then
+        local tmux_cmd = string.format(
+            "tmux neww -n 'Java Debug' 'bash -c \"%s\"; echo; echo Press enter to close...; read'",
+            run_cmd
+        )
+        vim.cmd("silent !" .. tmux_cmd)
+    else
+        vim.cmd "tabnew"
+        vim.cmd("terminal " .. 'echo "Debugging: ' .. fully_qualified_class .. '" && ' .. run_cmd)
+    end
 
     local try_attach = function()
         vim.notify("DebugMain: Attaching DAP to localhost:" .. jdwp_port, vim.log.levels.INFO)
