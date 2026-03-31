@@ -4,7 +4,7 @@ local events = require "luasnip.util.events"
 
 function M.get_package()
     local filepath = vim.fn.expand "%:p"
-    local package_path = filepath:match "src/main/java/(.+)/[^/]+%.java$"
+    local package_path = filepath:match "src/.-/java/(.+)/[^/]+%.java$"
     if package_path then
         return "package " .. package_path:gsub("/", ".") .. ";"
     end
