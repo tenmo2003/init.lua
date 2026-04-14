@@ -1,7 +1,7 @@
 return {
     {
         "iamkarasik/sonarqube.nvim",
-        event = "VeryLazy",
+        ft = "java",
         config = function()
             local opts = {}
 
