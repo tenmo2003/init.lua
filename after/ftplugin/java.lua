@@ -78,6 +78,7 @@ local config = {
         "--add-opens",
         "java.base/java.lang=ALL-UNNAMED",
         "-javaagent:" .. vim.fs.joinpath(jdtls_path, "lombok.jar"),
+        "-Djdt.core.sharedIndexLocation=" .. vim.fs.joinpath(workspace_path, "tenmo-shared-index"),
         "-jar",
         vim.fn.glob(vim.fs.joinpath(jdtls_path, "plugins", "org.eclipse.equinox.launcher_*.jar")),
         "-configuration",
