@@ -340,10 +340,8 @@ vim.keymap.set(
 
 vim.api.nvim_create_user_command("DebugMain", function(args)
     local buf = vim.api.nvim_get_current_buf()
-    local filetype = vim.bo[buf].filetype
-
-    if filetype ~= "java" then
-        vim.notify("DebugMain: Not a Java file", vim.log.levels.ERROR)
+    if vim.bo[buf].filetype ~= "java" then
+        vim.notify("DebugMain: Open any Java file from the target project first", vim.log.levels.ERROR)
         return
     end
 
@@ -353,33 +351,30 @@ vim.api.nvim_create_user_command("DebugMain", function(args)
         return
     end
 
+    local ok_util, jdtls_util = pcall(require, "jdtls.util")
+    if not ok_util then
+        vim.notify("DebugMain: nvim-jdtls not found", vim.log.levels.ERROR)
+        return
+    end
+
     vim.notify("DebugMain: Detecting a running jdtls client", vim.log.levels.INFO)
     local wait_success = vim.wait(5000, function()
-        local clients = vim.lsp.get_clients { name = "jdtls" }
-        return #clients > 0
+        return #vim.lsp.get_clients { name = "jdtls", bufnr = buf } > 0
     end, 500)
-
     if not wait_success then
         vim.notify("DebugMain: Timed out waiting for jdtls to start", vim.log.levels.ERROR)
         return
     end
 
-    vim.notify("DebugMain: Found jdtls client", vim.log.levels.INFO)
+    local jdtls_client = vim.lsp.get_clients({ name = "jdtls", bufnr = buf })[1]
+    local project_root = jdtls_client.config.root_dir
+    local prefix = project_root:sub(-1) == "/" and project_root or (project_root .. "/")
 
-    local filepath = vim.fn.expand "%:p"
-    local filename = vim.fn.expand "%:t:r"
-
-    local package_path = filepath:match "src/main/java/(.+)/[^/]+%.java$" or filepath:match "src/java/(.+)/[^/]+%.java$"
-    if not package_path then
-        vim.notify("DebugMain: Could not determine package structure", vim.log.levels.ERROR)
-        return
-    end
-
-    local fully_qualified_class = package_path:gsub("/", ".") .. "." .. filename
-
-    local project_root = filepath:match "(.+)/src/"
-    if not project_root then
-        vim.notify("DebugMain: Could not find project root", vim.log.levels.ERROR)
+    local has_maven = vim.fn.filereadable(project_root .. "/pom.xml") == 1
+    local has_gradle = vim.fn.filereadable(project_root .. "/build.gradle") == 1
+        or vim.fn.filereadable(project_root .. "/build.gradle.kts") == 1
+    if not (has_maven or has_gradle) then
+        vim.notify("DebugMain: No Maven or Gradle build file found", vim.log.levels.ERROR)
         return
     end
 
@@ -390,62 +385,90 @@ vim.api.nvim_create_user_command("DebugMain", function(args)
         end
     end
 
-    local has_maven = vim.fn.filereadable(project_root .. "/pom.xml") == 1
-    local has_gradle = vim.fn.filereadable(project_root .. "/build.gradle") == 1
-        or vim.fn.filereadable(project_root .. "/build.gradle.kts") == 1
+    local jdwp_port = 5005
 
-    local jdwp_port = 8000
-
-    local run_cmd
-    if has_maven then
-        run_cmd = string.format(
-            "cd %s && mvnDebug exec:java -Dexec.mainClass=%s",
-            vim.fn.shellescape(project_root),
-            vim.fn.shellescape(fully_qualified_class)
-        )
-    elseif has_gradle then
-        run_cmd = string.format("cd %s && ./gradlew bootRun --debug-jvm", vim.fn.shellescape(project_root))
-    else
-        vim.notify("DebugMain: No Maven or Gradle build file found", vim.log.levels.ERROR)
-        return
-    end
-
-    if #prog_args > 0 then
+    local function start_debug(main_class, project_name)
+        local run_cmd
         if has_maven then
-            run_cmd = run_cmd .. " -Dspring-boot.run.arguments=" .. table.concat(prog_args, ",")
-        elseif has_gradle then
-            run_cmd = run_cmd .. " --args='" .. table.concat(prog_args, " ") .. "'"
+            run_cmd = string.format(
+                'cd %s && MAVEN_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=%d" mvn exec:java -Dexec.mainClass=%s',
+                vim.fn.shellescape(project_root),
+                jdwp_port,
+                vim.fn.shellescape(main_class)
+            )
+        else
+            run_cmd = string.format("cd %s && ./gradlew bootRun --debug-jvm", vim.fn.shellescape(project_root))
         end
-    end
 
-    if os.getenv "TMUX" ~= nil then
-        local tmux_cmd = string.format(
-            "tmux neww -n 'Java Debug' 'bash -c \"%s\"; echo; echo Press enter to close...; read'",
-            run_cmd
-        )
-        vim.cmd("silent !" .. tmux_cmd)
-    else
-        vim.cmd "tabnew"
-        vim.cmd("terminal " .. 'echo "Debugging: ' .. fully_qualified_class .. '" && ' .. run_cmd)
-    end
+        if #prog_args > 0 then
+            if has_maven then
+                run_cmd = run_cmd .. " -Dspring-boot.run.arguments=" .. table.concat(prog_args, ",")
+            else
+                run_cmd = run_cmd .. " --args='" .. table.concat(prog_args, " ") .. "'"
+            end
+        end
 
-    local try_attach = function()
+        if os.getenv "TMUX" ~= nil then
+            local tmux_cmd = string.format(
+                "tmux neww -n 'Java Debug' 'bash -c \"%s\"; echo; echo Press enter to close...; read'",
+                run_cmd
+            )
+            vim.cmd("silent !" .. tmux_cmd)
+        else
+            vim.cmd "tabnew"
+            vim.cmd("terminal " .. 'echo "Debugging: ' .. main_class .. '" && ' .. run_cmd)
+        end
+
         vim.notify("DebugMain: Attaching DAP to localhost:" .. jdwp_port, vim.log.levels.INFO)
-
         dap.run {
             type = "java",
             request = "attach",
-            name = "Attach Spring: " .. fully_qualified_class,
+            name = "Attach: " .. main_class,
             hostName = "localhost",
             port = jdwp_port,
-            mainClass = fully_qualified_class,
+            mainClass = main_class,
+            projectName = project_name,
         }
     end
 
-    try_attach()
-    vim.notify("DebugMain: Attached DAP to port:" .. jdwp_port, vim.log.levels.INFO)
+    jdtls_util.execute_command({ command = "vscode.java.resolveMainClass" }, function(err, mainclasses)
+        if err then
+            vim.notify("DebugMain: " .. (err.message or vim.inspect(err)), vim.log.levels.ERROR)
+            return
+        end
+        if not mainclasses or #mainclasses == 0 then
+            vim.notify("DebugMain: No main class found in workspace", vim.log.levels.ERROR)
+            return
+        end
+
+        -- Restrict to entries living under this project's root (workspace may host others)
+        local candidates = vim.tbl_filter(function(mc)
+            return mc.filePath and vim.startswith(mc.filePath, prefix)
+        end, mainclasses)
+        if #candidates == 0 then
+            candidates = mainclasses
+        end
+
+        if #candidates == 1 then
+            vim.schedule(function()
+                start_debug(candidates[1].mainClass, candidates[1].projectName)
+            end)
+        else
+            vim.ui.select(candidates, {
+                prompt = "DebugMain: select main class",
+                format_item = function(mc)
+                    return mc.mainClass .. "  [" .. (mc.projectName or "?") .. "]"
+                end,
+            }, function(choice)
+                if not choice then
+                    return
+                end
+                start_debug(choice.mainClass, choice.projectName)
+            end)
+        end
+    end, buf)
 end, {
-    desc = "Debug Spring Boot Main via JDWP attach",
+    desc = "Debug Java Main via JDWP attach (auto-resolves main class)",
     nargs = "*",
 })
 
