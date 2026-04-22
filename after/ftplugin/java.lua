@@ -438,7 +438,7 @@ vim.api.nvim_create_user_command("DebugMain", function(args)
             name = "Attach Spring: " .. fully_qualified_class,
             hostName = "localhost",
             port = jdwp_port,
-            projectName = vim.fn.fnamemodify(project_root, ":t"),
+            mainClass = fully_qualified_class,
         }
     end
 
