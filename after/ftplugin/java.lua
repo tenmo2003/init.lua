@@ -182,153 +182,144 @@ end
 
 vim.g.java_run_main_command = true
 
-vim.api.nvim_create_user_command("RunMainInNewWindow", function(args)
+local function resolve_main_and_run(cmd_name, prog_args, run_callback)
     local buf = vim.api.nvim_get_current_buf()
-    local filetype = vim.bo[buf].filetype
-
-    if filetype ~= "java" then
-        vim.notify("RunMain: Not a Java file", vim.log.levels.ERROR)
+    if vim.bo[buf].filetype ~= "java" then
+        vim.notify(cmd_name .. ": Open any Java file from the target project first", vim.log.levels.ERROR)
         return
     end
 
-    local filepath = vim.fn.expand "%:p"
-    local filename = vim.fn.expand "%:t:r"
-
-    local package_path = filepath:match "src/main/java/(.+)/[^/]+%.java$"
-    if not package_path then
-        package_path = filepath:match "src/java/(.+)/[^/]+%.java$"
-    end
-
-    if not package_path then
-        vim.notify("RunMain: Could not determine package structure", vim.log.levels.ERROR)
+    local ok_util, jdtls_util = pcall(require, "jdtls.util")
+    if not ok_util then
+        vim.notify(cmd_name .. ": nvim-jdtls not found", vim.log.levels.ERROR)
         return
     end
 
-    local package_name = package_path:gsub("/", ".")
-    local fully_qualified_class = package_name .. "." .. filename
-
-    local project_root = filepath:match "(.+)/src/"
-    if not project_root then
-        vim.notify("RunMain: Could not find project root", vim.log.levels.ERROR)
+    vim.notify(cmd_name .. ": Detecting a running jdtls client", vim.log.levels.INFO)
+    local wait_success = vim.wait(5000, function()
+        return #vim.lsp.get_clients { name = "jdtls", bufnr = buf } > 0
+    end, 500)
+    if not wait_success then
+        vim.notify(cmd_name .. ": Timed out waiting for jdtls to start", vim.log.levels.ERROR)
         return
     end
+
+    local jdtls_client = vim.lsp.get_clients({ name = "jdtls", bufnr = buf })[1]
+    local project_root = jdtls_client.config.root_dir
+    local prefix = project_root:sub(-1) == "/" and project_root or (project_root .. "/")
 
     local has_maven = vim.fn.filereadable(project_root .. "/pom.xml") == 1
     local has_gradle = vim.fn.filereadable(project_root .. "/build.gradle") == 1
         or vim.fn.filereadable(project_root .. "/build.gradle.kts") == 1
 
-    local cmd
-    if has_maven then
-        cmd = string.format(
-            "cd %s && mvn exec:java -Dexec.mainClass=%s",
-            vim.fn.shellescape(project_root),
-            fully_qualified_class
-        )
-    elseif has_gradle then
-        cmd = string.format(
-            "cd %s && ./gradlew run -PmainClass=%s",
-            vim.fn.shellescape(project_root),
-            fully_qualified_class
-        )
-    else
-        cmd = string.format(
-            "cd %s && javac -d target/classes %s && java -cp target/classes %s",
-            vim.fn.shellescape(project_root),
-            vim.fn.shellescape(filepath),
-            fully_qualified_class
-        )
+    local function build_run_cmd(main_class)
+        local cmd
+        if has_maven then
+            cmd = string.format(
+                "cd %s && mvn exec:java -Dexec.mainClass=%s",
+                vim.fn.shellescape(project_root),
+                vim.fn.shellescape(main_class)
+            )
+        elseif has_gradle then
+            cmd = string.format(
+                "cd %s && ./gradlew run -PmainClass=%s",
+                vim.fn.shellescape(project_root),
+                vim.fn.shellescape(main_class)
+            )
+        else
+            cmd = string.format(
+                "cd %s && javac -d target/classes src/**/*.java && java -cp target/classes %s",
+                vim.fn.shellescape(project_root),
+                vim.fn.shellescape(main_class)
+            )
+        end
+        if #prog_args > 0 then
+            cmd = cmd .. " " .. table.concat(prog_args, " ")
+        end
+        return cmd
     end
 
+    jdtls_util.execute_command({ command = "vscode.java.resolveMainClass" }, function(err, mainclasses)
+        if err then
+            vim.notify(cmd_name .. ": " .. (err.message or vim.inspect(err)), vim.log.levels.ERROR)
+            return
+        end
+        if not mainclasses or #mainclasses == 0 then
+            vim.notify(cmd_name .. ": No main class found in workspace", vim.log.levels.ERROR)
+            return
+        end
+
+        local candidates = vim.tbl_filter(function(mc)
+            return mc.filePath and vim.startswith(mc.filePath, prefix)
+        end, mainclasses)
+        if #candidates == 0 then
+            candidates = mainclasses
+        end
+
+        if #candidates == 1 then
+            vim.schedule(function()
+                run_callback(candidates[1].mainClass, build_run_cmd(candidates[1].mainClass))
+            end)
+        else
+            vim.ui.select(candidates, {
+                prompt = cmd_name .. ": select main class",
+                format_item = function(mc)
+                    return mc.mainClass .. "  [" .. (mc.projectName or "?") .. "]"
+                end,
+            }, function(choice)
+                if not choice then
+                    return
+                end
+                run_callback(choice.mainClass, build_run_cmd(choice.mainClass))
+            end)
+        end
+    end, buf)
+end
+
+vim.api.nvim_create_user_command("RunMainInNewWindow", function(args)
+    local prog_args = {}
     if args.args ~= "" then
-        cmd = cmd .. " " .. args.args
+        for arg in args.args:gmatch "%S+" do
+            table.insert(prog_args, arg)
+        end
     end
 
-    if vim.g.run_main_term_buf and vim.api.nvim_buf_is_valid(vim.g.run_main_term_buf) then
-        vim.api.nvim_buf_delete(vim.g.run_main_term_buf, { force = true })
-    end
-
-    vim.cmd "belowright 15split"
-    vim.cmd("terminal " .. 'echo "Running: ' .. fully_qualified_class .. '" && ' .. cmd)
-    vim.g.run_main_term_buf = vim.api.nvim_get_current_buf()
+    resolve_main_and_run("RunMainInNewWindow", prog_args, function(main_class, cmd)
+        if vim.g.run_main_term_buf and vim.api.nvim_buf_is_valid(vim.g.run_main_term_buf) then
+            vim.api.nvim_buf_delete(vim.g.run_main_term_buf, { force = true })
+        end
+        vim.cmd "belowright 15split"
+        vim.cmd("terminal " .. 'echo "Running: ' .. main_class .. '" && ' .. cmd)
+        vim.g.run_main_term_buf = vim.api.nvim_get_current_buf()
+    end)
 end, {
-    desc = "Run Java Main Method (mostly for quick testing)",
-    nargs = "*", -- Allow additional arguments
+    desc = "Run Java Main Method (auto-resolves main class)",
+    nargs = "*",
 })
 
 vim.keymap.set("n", "<leader>rmw", "<Cmd>RunMainInNewWindow<CR>", { desc = "Run the main class in a new window" })
 
 vim.api.nvim_create_user_command("RunMainInNewTab", function(args)
-    local buf = vim.api.nvim_get_current_buf()
-    local filetype = vim.bo[buf].filetype
-
-    if filetype ~= "java" then
-        vim.notify("RunMain: Not a Java file", vim.log.levels.ERROR)
-        return
-    end
-
-    local filepath = vim.fn.expand "%:p"
-    local filename = vim.fn.expand "%:t:r"
-
-    local package_path = filepath:match "src/main/java/(.+)/[^/]+%.java$"
-    if not package_path then
-        package_path = filepath:match "src/java/(.+)/[^/]+%.java$"
-    end
-
-    if not package_path then
-        vim.notify("RunMain: Could not determine package structure", vim.log.levels.ERROR)
-        return
-    end
-
-    local package_name = package_path:gsub("/", ".")
-    local fully_qualified_class = package_name .. "." .. filename
-
-    local project_root = filepath:match "(.+)/src/"
-    if not project_root then
-        vim.notify("RunMain: Could not find project root", vim.log.levels.ERROR)
-        return
-    end
-
-    local has_maven = vim.fn.filereadable(project_root .. "/pom.xml") == 1
-    local has_gradle = vim.fn.filereadable(project_root .. "/build.gradle") == 1
-        or vim.fn.filereadable(project_root .. "/build.gradle.kts") == 1
-
-    local cmd
-    if has_maven then
-        cmd = string.format(
-            "cd %s && mvn exec:java -Dexec.mainClass=%s",
-            vim.fn.shellescape(project_root),
-            fully_qualified_class
-        )
-    elseif has_gradle then
-        cmd = string.format(
-            "cd %s && ./gradlew run -PmainClass=%s",
-            vim.fn.shellescape(project_root),
-            fully_qualified_class
-        )
-    else
-        cmd = string.format(
-            "cd %s && javac -d target/classes %s && java -cp target/classes %s",
-            vim.fn.shellescape(project_root),
-            vim.fn.shellescape(filepath),
-            fully_qualified_class
-        )
-    end
-
+    local prog_args = {}
     if args.args ~= "" then
-        cmd = cmd .. " " .. args.args
+        for arg in args.args:gmatch "%S+" do
+            table.insert(prog_args, arg)
+        end
     end
 
-    if os.getenv "TMUX" ~= nil then
-        local tmux_cmd =
-            string.format("tmux neww -n 'Java Run' 'bash -c \"%s\"; echo; echo Press enter to close...; read'", cmd)
-        vim.cmd("silent !" .. tmux_cmd)
-    else
-        vim.cmd "tabnew"
-        vim.cmd("terminal " .. 'echo "Running: ' .. fully_qualified_class .. '" && ' .. cmd)
-    end
+    resolve_main_and_run("RunMainInNewTab", prog_args, function(main_class, cmd)
+        if os.getenv "TMUX" ~= nil then
+            local tmux_cmd =
+                string.format("tmux neww -n 'Java Run' 'bash -c \"%s\"; echo; echo Press enter to close...; read'", cmd)
+            vim.cmd("silent !" .. tmux_cmd)
+        else
+            vim.cmd "tabnew"
+            vim.cmd("terminal " .. 'echo "Running: ' .. main_class .. '" && ' .. cmd)
+        end
+    end)
 end, {
-    desc = "Run Java Main method in a new tab (use tmux if available)",
-    nargs = "*", -- Allow additional arguments
+    desc = "Run Java Main method in a new tab (auto-resolves main class)",
+    nargs = "*",
 })
 
 vim.keymap.set(
