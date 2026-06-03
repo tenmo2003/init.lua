@@ -32,20 +32,6 @@ return {
             end, { desc = "Telescope find files including ignored" })
             set("n", "<leader>pg", builtin.live_grep, { desc = "Telescope live grep" })
             set("n", "<C-p>", builtin.git_files, { desc = "Telescope git files" })
-            set("n", "<leader>ps", function()
-                builtin.grep_string { search = vim.fn.input "Grep > " }
-            end, { desc = "Search string" })
-            set("v", "<leader>ps", function()
-                builtin.grep_string()
-            end, { desc = "Search selection" })
-            set("n", "<leader>pws", function()
-                local word = vim.fn.expand "<cword>"
-                builtin.grep_string { search = word }
-            end, { desc = "Search word under the cursor" })
-            set("n", "<leader>pWs", function()
-                local word = vim.fn.expand "<cWORD>"
-                builtin.grep_string { search = word }
-            end, { desc = "Search WORD under the cursor" })
             set("n", "<leader>pc", builtin.git_commits, { desc = "Telescope: commits" })
             set("n", "<leader>pb", function()
                 builtin.buffers { sort_mru = true }
@@ -59,6 +45,21 @@ return {
             set("n", "<leader>th", builtin.help_tags, { desc = "Telescope: help tags" })
             set("n", "<leader>tr", builtin.resume, { desc = "Telescope: resume" })
             set("n", "<leader>tk", builtin.keymaps, { desc = "Telescope: keymaps" })
+
+            set("n", "<leader>ts", function()
+                builtin.grep_string { search = vim.fn.input "Grep > " }
+            end, { desc = "Search string" })
+            set("v", "<leader>ts", function()
+                builtin.grep_string()
+            end, { desc = "Search selection" })
+            set("n", "<leader>tws", function()
+                local word = vim.fn.expand "<cword>"
+                builtin.grep_string { search = word }
+            end, { desc = "Search word under the cursor" })
+            set("n", "<leader>tWs", function()
+                local word = vim.fn.expand "<cWORD>"
+                builtin.grep_string { search = word }
+            end, { desc = "Search WORD under the cursor" })
 
             -- Telescope extensions
             require("telescope").load_extension "fzf"
