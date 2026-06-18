@@ -73,9 +73,7 @@ return {
             }
 
             for lang, fts in pairs(parser_ft) do
-                for _, ft in ipairs(fts) do
-                    vim.treesitter.language.register(lang, ft)
-                end
+                vim.treesitter.language.register(lang, fts)
             end
 
             ts.setup {
