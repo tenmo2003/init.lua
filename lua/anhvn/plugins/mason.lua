@@ -65,7 +65,7 @@ return {
 
             require("mason-lspconfig").setup {
                 automatic_enable = {
-                    exclude = { "jdtls" },
+                    exclude = { "jdtls", "roslyn_ls" },
                 },
             }
         end,
