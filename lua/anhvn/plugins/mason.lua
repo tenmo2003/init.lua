@@ -25,6 +25,9 @@ return {
                 ts_ls = true,
                 tailwindcss = true,
                 emmet_language_server = true,
+                roslyn_ls = {
+                    manual_install = true,
+                },
             }
 
             local servers_to_install = vim.tbl_filter(function(key)
