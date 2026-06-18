@@ -15,7 +15,7 @@ vim.opt.wrap = false
 vim.opt.swapfile = false
 vim.opt.backup = false
 
-local home = vim.loop.os_uname().sysname == "Windows_NT" and os.getenv "USERPROFILE" -- Windows
+local home = vim.uv.os_uname().sysname == "Windows_NT" and os.getenv "USERPROFILE" -- Windows
     or os.getenv "HOME" -- Unix-like
 
 vim.opt.undodir = home .. "/.vim/undodir"
