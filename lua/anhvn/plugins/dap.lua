@@ -1,6 +1,17 @@
 return {
     {
         "mfussenegger/nvim-dap",
+        dependencies = {
+            {
+                "ownself/nvim-dap-unity",
+                opts = {},
+                ft = "cs",
+                build = function()
+                    -- To install the vstuc during installation via lazy.nvim
+                    require("nvim-dap-unity").install()
+                end,
+            },
+        },
         lazy = false,
         keys = function()
             local dap = require "dap"
