@@ -180,7 +180,7 @@ vim.keymap.set(
     { desc = "Extract Method" }
 )
 
-vim.cmd [[setlocal makeprg=mvn\ clean\ compile]]
+vim.cmd [[setlocal makeprg=mvn\ clean\ compile\ -B]]
 
 require "anhvn.dap.java"
 
