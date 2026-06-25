@@ -37,6 +37,16 @@ local java_debug_path = vim.fs.joinpath(
     "com.microsoft.java.debug.plugin-*.jar"
 )
 
+local java_debug_bundles = vim.fn.glob(java_debug_path, true, true)
+if vim.tbl_isempty(java_debug_bundles) then
+    vim.notify(
+        "java-debug-adapter not found in Mason. Run :MasonInstall java-debug-adapter "
+            .. "(RunMain/DebugMain will not work without it).",
+        vim.log.levels.WARN,
+        { title = "jdtls" }
+    )
+end
+
 local status, jdtls = pcall(require, "jdtls")
 if not status then
     return
@@ -126,9 +136,7 @@ local config = {
     },
 
     init_options = {
-        bundles = {
-            vim.fn.glob(java_debug_path, true),
-        },
+        bundles = java_debug_bundles,
     },
 
     on_attach = function(client, bufnr)
