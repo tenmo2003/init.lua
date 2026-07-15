@@ -272,6 +272,25 @@ end, {
     desc = "Select JAVA_HOME for the current project (persisted across sessions)",
 })
 
+local function resolve_module_rel(file_path, reactor_prefix)
+    if not file_path then
+        return nil
+    end
+    local module_dir = vim.fs.root(file_path, { "pom.xml", "build.gradle", "build.gradle.kts" })
+    if not module_dir then
+        return nil
+    end
+    local module_prefix = module_dir:sub(-1) == "/" and module_dir or (module_dir .. "/")
+    if module_prefix == reactor_prefix or not vim.startswith(module_prefix, reactor_prefix) then
+        return nil
+    end
+    local rel = module_prefix:sub(#reactor_prefix + 1):gsub("/$", "")
+    if rel == "" then
+        return nil
+    end
+    return rel
+end
+
 local function resolve_main_and_run(cmd_name, prog_args, run_callback)
     local buf = vim.api.nvim_get_current_buf()
     if vim.bo[buf].filetype ~= "java" then
@@ -302,24 +321,40 @@ local function resolve_main_and_run(cmd_name, prog_args, run_callback)
     local has_gradle = vim.fn.filereadable(project_root .. "/build.gradle") == 1
         or vim.fn.filereadable(project_root .. "/build.gradle.kts") == 1
 
-    local function build_run_cmd(main_class)
+    local java_home = read_java_home_state()[project_root] or default_java_home
+    local env = string.format(
+        "JAVA_HOME=%s PATH=%s:$PATH",
+        vim.fn.shellescape(java_home),
+        vim.fn.shellescape(java_home .. "/bin")
+    )
+
+    local function build_run_cmd(mc)
+        local main_class = mc.mainClass
+        local module_rel = resolve_module_rel(mc.filePath, prefix)
         local cmd
         if has_maven then
+            local run_dir = module_rel and (prefix .. module_rel) or project_root
             cmd = string.format(
-                "cd %s && mvn exec:java -Dexec.mainClass=%s",
-                vim.fn.shellescape(project_root),
+                "cd %s && %s mvn exec:java -Dexec.mainClass=%s",
+                vim.fn.shellescape(run_dir),
+                env,
                 vim.fn.shellescape(main_class)
             )
         elseif has_gradle then
+            local run_task = module_rel and (":" .. module_rel:gsub("/", ":") .. ":run") or "run"
             cmd = string.format(
-                "cd %s && ./gradlew run -PmainClass=%s",
+                "cd %s && %s ./gradlew %s -PmainClass=%s",
                 vim.fn.shellescape(project_root),
+                env,
+                run_task,
                 vim.fn.shellescape(main_class)
             )
         else
             cmd = string.format(
-                "cd %s && javac -d target/classes src/**/*.java && java -cp target/classes %s",
+                "cd %s && %s javac -d target/classes src/**/*.java && %s java -cp target/classes %s",
                 vim.fn.shellescape(project_root),
+                env,
+                env,
                 vim.fn.shellescape(main_class)
             )
         end
@@ -348,7 +383,7 @@ local function resolve_main_and_run(cmd_name, prog_args, run_callback)
 
         if #candidates == 1 then
             vim.schedule(function()
-                run_callback(candidates[1].mainClass, build_run_cmd(candidates[1].mainClass))
+                run_callback(candidates[1].mainClass, build_run_cmd(candidates[1]))
             end)
         else
             vim.ui.select(candidates, {
@@ -360,7 +395,7 @@ local function resolve_main_and_run(cmd_name, prog_args, run_callback)
                 if not choice then
                     return
                 end
-                run_callback(choice.mainClass, build_run_cmd(choice.mainClass))
+                run_callback(choice.mainClass, build_run_cmd(choice))
             end)
         end
     end, buf)
@@ -468,17 +503,31 @@ vim.api.nvim_create_user_command("DebugMain", function(args)
 
     local jdwp_port = 5005
 
-    local function start_debug(main_class, project_name)
+    local java_home = read_java_home_state()[project_root] or default_java_home
+    local env = string.format(
+        "JAVA_HOME=%s PATH=%s:$PATH",
+        vim.fn.shellescape(java_home),
+        vim.fn.shellescape(java_home .. "/bin")
+    )
+
+    local function start_debug(mc)
+        local main_class = mc.mainClass
+        local project_name = mc.projectName
+        local module_rel = resolve_module_rel(mc.filePath, prefix)
         local run_cmd
         if has_maven then
+            local run_dir = module_rel and (prefix .. module_rel) or project_root
             run_cmd = string.format(
-                'cd %s && MAVEN_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=%d" mvn exec:java -Dexec.mainClass=%s',
-                vim.fn.shellescape(project_root),
+                'cd %s && %s MAVEN_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=%d" mvn exec:java -Dexec.mainClass=%s',
+                vim.fn.shellescape(run_dir),
+                env,
                 jdwp_port,
                 vim.fn.shellescape(main_class)
             )
         else
-            run_cmd = string.format("cd %s && ./gradlew bootRun --debug-jvm", vim.fn.shellescape(project_root))
+            local boot_task = module_rel and (":" .. module_rel:gsub("/", ":") .. ":bootRun") or "bootRun"
+            run_cmd =
+                string.format("cd %s && %s ./gradlew %s --debug-jvm", vim.fn.shellescape(project_root), env, boot_task)
         end
 
         if #prog_args > 0 then
@@ -522,7 +571,6 @@ vim.api.nvim_create_user_command("DebugMain", function(args)
             return
         end
 
-        -- Restrict to entries living under this project's root (workspace may host others)
         local candidates = vim.tbl_filter(function(mc)
             return mc.filePath and vim.startswith(mc.filePath, prefix)
         end, mainclasses)
@@ -532,7 +580,7 @@ vim.api.nvim_create_user_command("DebugMain", function(args)
 
         if #candidates == 1 then
             vim.schedule(function()
-                start_debug(candidates[1].mainClass, candidates[1].projectName)
+                start_debug(candidates[1])
             end)
         else
             vim.ui.select(candidates, {
@@ -544,7 +592,7 @@ vim.api.nvim_create_user_command("DebugMain", function(args)
                 if not choice then
                     return
                 end
-                start_debug(choice.mainClass, choice.projectName)
+                start_debug(choice)
             end)
         end
     end, buf)
