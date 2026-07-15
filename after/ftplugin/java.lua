@@ -1,7 +1,8 @@
 local home = vim.uv.os_uname().sysname == "Windows_NT" and os.getenv "USERPROFILE" -- Windows
     or os.getenv "HOME" -- Unix-like
 
-local default_jdk = "/opt/jdk-21.0.6"
+local default_java_home = "/opt/jdk-21.0.6/"
+local jdtls_runtime_jdk = "/opt/jdk-21.0.6" -- JDTLS requires minimum Java 21
 
 -- See https://github.com/eclipse/eclipse.jdt.ls/wiki/Running-the-JAVA-LS-server-from-the-command-line#initialize-request
 -- And search for `interface RuntimeOption`
@@ -9,17 +10,51 @@ local default_jdk = "/opt/jdk-21.0.6"
 local jdk_home_mappings = {
     ["/opt/jdk-8"] = "JavaSE-1.8",
     ["/opt/jdk-11"] = "JavaSE-11",
+    ["/opt/jdk-17/"] = "JavaSE-17",
     ["/opt/jdk-21.0.6"] = "JavaSE-21",
 }
 
 local runtimes = {}
-for java_home, name in pairs(jdk_home_mappings) do
-    if vim.fn.isdirectory(java_home) == 1 then
-        table.insert(runtimes, { name = name, path = java_home })
+for jdk_home, name in pairs(jdk_home_mappings) do
+    if vim.fn.isdirectory(jdk_home) == 1 then
+        table.insert(runtimes, { name = name, path = jdk_home })
     end
 end
 
-vim.uv.os_setenv("JAVA_HOME", default_jdk)
+local project_root = vim.fs.root(0, {
+    ".git",
+    "mvnw",
+    "gradlew",
+    "pom.xml",
+    "build.gradle",
+    "build.gradle.kts",
+    "settings.gradle",
+    "settings.gradle.kts",
+    "build.xml",
+}) or vim.fn.getcwd()
+
+local java_home_state_file = vim.fs.joinpath(vim.fn.stdpath "data", "java_home.json")
+
+local function read_java_home_state()
+    if vim.fn.filereadable(java_home_state_file) ~= 1 then
+        return {}
+    end
+    local ok, decoded = pcall(function()
+        return vim.json.decode(table.concat(vim.fn.readfile(java_home_state_file), "\n"))
+    end)
+    if not ok or type(decoded) ~= "table" then
+        return {}
+    end
+    return decoded
+end
+
+local function write_java_home_state(state)
+    vim.fn.mkdir(vim.fn.fnamemodify(java_home_state_file, ":h"), "p")
+    vim.fn.writefile({ vim.json.encode(state) }, java_home_state_file)
+end
+
+local effective_java_home = read_java_home_state()[project_root] or default_java_home
+vim.uv.os_setenv("JAVA_HOME", effective_java_home)
 
 local workspace_path = home .. "/.local/share/nvim/jdtls-workspace/"
 local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
@@ -75,7 +110,7 @@ local capabilities = {
 
 local config = {
     cmd = {
-        default_jdk .. "/bin/java",
+        jdtls_runtime_jdk .. "/bin/java",
         "-Declipse.application=org.eclipse.jdt.ls.core.id1",
         "-Dosgi.bundles.defaultStartLevel=4",
         "-Declipse.product=org.eclipse.jdt.ls.core.product",
@@ -189,6 +224,53 @@ if vim.g.java_run_main_command then
 end
 
 vim.g.java_run_main_command = true
+
+vim.api.nvim_create_user_command("JavaHome", function()
+    local state = read_java_home_state()
+    local current = state[project_root] or default_java_home
+
+    local choices = { { label = "default", path = default_java_home } }
+    local names = vim.tbl_keys(jdk_home_mappings)
+    table.sort(names)
+    for _, jdk_home in ipairs(names) do
+        table.insert(choices, { label = jdk_home_mappings[jdk_home], path = jdk_home })
+    end
+    table.insert(choices, { label = "clear override (use default)", clear = true })
+
+    vim.ui.select(choices, {
+        prompt = "JAVA_HOME for " .. project_root,
+        format_item = function(c)
+            if c.clear then
+                return c.label
+            end
+            local marker = c.path == current and "  (current)" or ""
+            return string.format("%-10s %s%s", c.label, c.path, marker)
+        end,
+    }, function(choice)
+        if not choice then
+            return
+        end
+
+        local fresh = read_java_home_state()
+        if choice.clear then
+            fresh[project_root] = nil
+            write_java_home_state(fresh)
+            vim.uv.os_setenv("JAVA_HOME", default_java_home)
+            vim.notify(
+                "JavaHome: cleared override for " .. project_root .. "; using default " .. default_java_home,
+                vim.log.levels.INFO
+            )
+            return
+        end
+
+        fresh[project_root] = choice.path
+        write_java_home_state(fresh)
+        vim.uv.os_setenv("JAVA_HOME", choice.path)
+        vim.notify("JavaHome: JAVA_HOME set to " .. choice.path .. " for " .. project_root, vim.log.levels.INFO)
+    end)
+end, {
+    desc = "Select JAVA_HOME for the current project (persisted across sessions)",
+})
 
 local function resolve_main_and_run(cmd_name, prog_args, run_callback)
     local buf = vim.api.nvim_get_current_buf()
