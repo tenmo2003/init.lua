@@ -272,6 +272,17 @@ end, {
     desc = "Select JAVA_HOME for the current project (persisted across sessions)",
 })
 
+local function find_free_port()
+    local sock = vim.uv.new_tcp()
+    if not sock then
+        return nil
+    end
+    local ok = pcall(sock.bind, sock, "127.0.0.1", 0)
+    local name = ok and sock:getsockname()
+    sock:close()
+    return name and name.port
+end
+
 local function resolve_module_rel(file_path, reactor_prefix)
     if not file_path then
         return nil
@@ -501,7 +512,11 @@ vim.api.nvim_create_user_command("DebugMain", function(args)
         end
     end
 
-    local jdwp_port = 5005
+    local jdwp_port = find_free_port()
+    if not jdwp_port then
+        vim.notify("DebugMain: Could not allocate a JDWP port", vim.log.levels.ERROR)
+        return
+    end
 
     local java_home = read_java_home_state()[project_root] or default_java_home
     local env = string.format(
@@ -526,8 +541,13 @@ vim.api.nvim_create_user_command("DebugMain", function(args)
             )
         else
             local boot_task = module_rel and (":" .. module_rel:gsub("/", ":") .. ":bootRun") or "bootRun"
-            run_cmd =
-                string.format("cd %s && %s ./gradlew %s --debug-jvm", vim.fn.shellescape(project_root), env, boot_task)
+            run_cmd = string.format(
+                "cd %s && %s ./gradlew %s --debug-jvm -Dorg.gradle.debug.port=%d",
+                vim.fn.shellescape(project_root),
+                env,
+                boot_task,
+                jdwp_port
+            )
         end
 
         if #prog_args > 0 then
