@@ -179,3 +179,25 @@ vim.api.nvim_create_user_command("LspLog", function()
     vim.cmd "tabnew"
     vim.cmd("edit " .. vim.lsp.log.get_filename())
 end, {})
+
+vim.api.nvim_create_user_command("LspTrimLog", function(args)
+    local keep = tonumber(args.args) or 100
+    if keep <= 0 then
+        vim.notify("Invalid number of lines to keep", vim.log.levels.ERROR)
+        return
+    end
+
+    local log_file = vim.lsp.log.get_filename()
+    if vim.fn.filereadable(log_file) == 0 then
+        vim.notify("No LSP log file found", vim.log.levels.WARN)
+        return
+    end
+
+    local lines = vim.fn.readfile(log_file)
+    if #lines > keep then
+        lines = vim.list_slice(lines, #lines - keep + 1, #lines)
+    end
+
+    vim.fn.writefile(lines, log_file)
+    vim.notify(("Trimmed LSP log to %d lines"):format(#lines))
+end, { nargs = "?" })
