@@ -78,7 +78,7 @@ end, { desc = "Go to next diagnostic" })
 set("n", "<leader>ll", function()
     vim.ui.select({ "OFF", "ERROR", "WARN", "INFO", "DEBUG" }, { prompt = "Select log level: " }, function(item)
         if item then
-            vim.lsp.set_log_level(item)
+            vim.lsp.log.set_level(item)
         end
     end)
 end, { desc = "Set LSP log level" })
