@@ -21,17 +21,18 @@ for jdk_home, name in pairs(jdk_home_mappings) do
     end
 end
 
-local project_root = vim.fs.root(0, {
-    ".git",
-    "mvnw",
-    "gradlew",
-    "pom.xml",
-    "build.gradle",
-    "build.gradle.kts",
-    "settings.gradle",
-    "settings.gradle.kts",
-    "build.xml",
-}) or vim.fn.getcwd()
+-- priorize multi-module projects
+local function find_jdtls_root(buf)
+    return vim.fs.root(buf, { ".git", "mvnw", "gradlew" })
+        or vim.fs.root(buf, { "pom.xml", "build.gradle", "build.xml", "settings.gradle", "settings.gradle.kts" })
+end
+
+-- JAVA_HOME overrides are keyed by the jdtls root so :make, RunMain and DebugMain read the same entry
+local function find_project_root(buf)
+    return find_jdtls_root(buf) or vim.fn.getcwd()
+end
+
+local project_root = find_project_root(0)
 
 local java_home_state_file = vim.fs.joinpath(vim.fn.stdpath "data", "java_home.json")
 
@@ -51,6 +52,24 @@ end
 local function write_java_home_state(state)
     vim.fn.mkdir(vim.fn.fnamemodify(java_home_state_file, ":h"), "p")
     vim.fn.writefile({ vim.json.encode(state) }, java_home_state_file)
+end
+
+local function set_makeprg(buf, java_home)
+    vim.bo[buf].makeprg = string.format(
+        "JAVA_HOME=%s PATH=%s:$PATH mvn clean compile -B",
+        vim.fn.shellescape(java_home),
+        vim.fn.shellescape(java_home .. "/bin")
+    )
+end
+
+-- JAVA_HOME env is process-wide, so makeprg of every buffer in the project is rewritten too
+local function apply_java_home(root, java_home)
+    vim.uv.os_setenv("JAVA_HOME", java_home)
+    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+        if vim.api.nvim_buf_is_loaded(buf) and vim.bo[buf].filetype == "java" and find_project_root(buf) == root then
+            set_makeprg(buf, java_home)
+        end
+    end
 end
 
 local effective_java_home = read_java_home_state()[project_root] or default_java_home
@@ -131,13 +150,7 @@ local config = {
         "-data",
         workspace_dir,
     },
-    root_dir = require("jdtls.setup").find_root { ".git", "mvnw", "gradlew" } or require("jdtls.setup").find_root {
-        "pom.xml",
-        "build.gradle",
-        "build.xml",
-        "settings.gradle",
-        "settings.gradle.kts",
-    }, -- priorize multi-module projects
+    root_dir = find_jdtls_root(0),
 
     capabilities = capabilities,
     settings = {
@@ -215,7 +228,7 @@ vim.keymap.set(
     { desc = "Extract Method" }
 )
 
-vim.cmd [[setlocal makeprg=mvn\ clean\ compile\ -B]]
+set_makeprg(0, effective_java_home)
 
 require "anhvn.dap.java"
 
@@ -226,6 +239,8 @@ end
 vim.g.java_run_main_command = true
 
 vim.api.nvim_create_user_command("JavaHome", function()
+    -- the command is registered once, so the root must come from the buffer it is invoked in
+    local project_root = find_project_root(0)
     local state = read_java_home_state()
     local current = state[project_root] or default_java_home
 
@@ -255,7 +270,7 @@ vim.api.nvim_create_user_command("JavaHome", function()
         if choice.clear then
             fresh[project_root] = nil
             write_java_home_state(fresh)
-            vim.uv.os_setenv("JAVA_HOME", default_java_home)
+            apply_java_home(project_root, default_java_home)
             vim.notify(
                 "JavaHome: cleared override for " .. project_root .. "; using default " .. default_java_home,
                 vim.log.levels.INFO
@@ -265,7 +280,7 @@ vim.api.nvim_create_user_command("JavaHome", function()
 
         fresh[project_root] = choice.path
         write_java_home_state(fresh)
-        vim.uv.os_setenv("JAVA_HOME", choice.path)
+        apply_java_home(project_root, choice.path)
         vim.notify("JavaHome: JAVA_HOME set to " .. choice.path .. " for " .. project_root, vim.log.levels.INFO)
     end)
 end, {
