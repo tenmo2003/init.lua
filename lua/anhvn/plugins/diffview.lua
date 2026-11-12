@@ -24,7 +24,11 @@ return {
                 },
             }
 
-            vim.keymap.set("n", "<leader>fh", function()
+            vim.keymap.set("n", "<leader>fha", function()
+                vim.cmd "DiffviewFileHistory"
+            end)
+
+            vim.keymap.set("n", "<leader>fhc", function()
                 vim.cmd "DiffviewFileHistory %"
             end, { desc = "View current file history from git" })
 
